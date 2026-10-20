@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.io.File
+import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
     kotlin("jvm")
@@ -19,6 +20,13 @@ dependencies {
     implementation("com.formdev:flatlaf:3.7.2")
     implementation("net.java.dev.jna:jna:5.19.1")
     implementation("net.java.dev.jna:jna-platform:5.19.1")
+    testImplementation(kotlin("test"))
+}
+
+tasks.named<ProcessResources>("processResources") {
+    from(rootProject.file("extension")) {
+        into("extension")
+    }
 }
 
 compose.desktop {
@@ -29,7 +37,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             modules("java.sql", "jdk.httpserver")
             packageName = "PWDog"
-            packageVersion = "0.2.0"
+            packageVersion = "0.2.1"
             description = "本地加密密码管理器"
             vendor = "PWDog"
             copyright = "Copyright 2026 PWDog"
@@ -70,7 +78,7 @@ val packageMsiWithCleanup = tasks.register<Exec>("packageMsiWithCleanup") {
         "--type", "msi",
         "--app-image", appImage.absolutePath,
         "--name", "PWDog",
-        "--app-version", "0.2.0",
+        "--app-version", "0.2.1",
         "--vendor", "PWDog",
         "--description", "本地加密密码管理器",
         "--copyright", "Copyright 2026 PWDog",

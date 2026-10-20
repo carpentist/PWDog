@@ -50,11 +50,11 @@ The Release workflow builds these on `windows-latest` and uploads them with `gh 
 ## Tag and publish
 
 ```powershell
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.2.1
+git push origin v0.2.1
 ```
 
-The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.0.md` and attaches the assets.
+The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.1.md` and attaches the assets.
 
 ## Before announcing
 

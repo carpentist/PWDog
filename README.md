@@ -48,7 +48,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 ## 下载与安装
 
-从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 下载最新的 `PWDog-0.2.0.msi`。
+从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 下载最新的 `PWDog-0.2.1.msi`。
 
 - 要求：Windows 10 / 11 x64。
 - 按当前 Windows 用户安装，默认路径 `%LOCALAPPDATA%\PWDog`，不需要管理员权限。
@@ -66,14 +66,16 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 ### 浏览器扩展
 
-扩展位于仓库的 [`extension/`](extension) 目录，以未打包扩展方式加载：
+安装版已经内置扩展文件，不需要源码：
 
-1. 打开 Chrome / Edge 的扩展管理页，启用“开发者模式”。
-2. 选择“加载已解压的扩展程序”，指向本仓库的 `extension` 目录。
-3. 打开 PWDog 设置 → 浏览器自动填充，复制接口地址与配对令牌。
-4. 在扩展设置中填入这两项。桌面端锁定时不会返回密码，扩展也不会自动提交表单。
+1. 打开 PWDog 设置 → 浏览器自动填充。
+2. 点击“打开扩展文件夹”。应用会把扩展解压到 `%LOCALAPPDATA%\PWDogData\extension` 并在资源管理器中打开。
+3. 在 Chrome / Edge 扩展管理页启用“开发者模式”，选择“加载已解压的扩展程序”，然后选中这个文件夹。
+4. 复制下面显示的接口地址与配对令牌，填入扩展设置。
 
-也可以从 Release 下载 `PWDog-Extension-0.2.0.zip` 解压后加载。
+桌面端锁定时不会返回密码，扩展也不会自动提交表单。
+
+从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.2.1.zip`。
 
 ## 安全模型
 
@@ -134,7 +136,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 .\gradlew.bat :desktopApp:packageMsiWithCleanup
 ```
 
-MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.2.0.msi`
+MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.2.1.msi`
 
 也可以直接用 IntelliJ IDEA 打开项目并运行 `com.pwdog.desktop.MainKt`。
 

@@ -93,6 +93,7 @@ import com.pwdog.desktop.design.QuietToast
 import com.pwdog.desktop.design.SectionLabel
 import com.pwdog.desktop.design.SheetHeader
 import com.pwdog.desktop.design.ThemeModeSelector
+import com.pwdog.desktop.extension.ExtensionBundle
 import com.pwdog.desktop.security.WindowsAutostart
 import com.pwdog.desktop.security.WindowsQuickUnlock
 import com.pwdog.desktop.settings.AppSettings
@@ -116,6 +117,7 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.net.URI
 import java.nio.file.Files
+import java.nio.file.Path
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -301,7 +303,8 @@ internal fun VaultScreen(
                     onSettingsChange = onSettingsChange,
                     entryCount = entries.size,
                     pane = pane,
-                    autofillConnected = autofill.settings != null,
+                    autofillConnected = autofill.settings != null && autofill.error == null,
+                    autofillError = autofill.error != null,
                     width = sidebarWidth,
                     onEntries = {
                         pane = VaultPane.Entries
@@ -616,6 +619,7 @@ private fun Sidebar(
     entryCount: Int,
     pane: VaultPane,
     autofillConnected: Boolean,
+    autofillError: Boolean,
     width: androidx.compose.ui.unit.Dp,
     onEntries: () -> Unit,
     onSettings: () -> Unit,
@@ -723,9 +727,21 @@ private fun Sidebar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                QIcon(QIcon.Plug, Modifier.size(13.dp), if (autofillConnected) quiet.accent else quiet.faint)
+                QIcon(
+                    QIcon.Plug,
+                    Modifier.size(13.dp),
+                    when {
+                        autofillConnected -> quiet.accent
+                        autofillError -> quiet.danger
+                        else -> quiet.faint
+                    },
+                )
                 Text(
-                    if (autofillConnected) "自动填充服务已启动" else "浏览器扩展",
+                    when {
+                        autofillConnected -> "自动填充服务已启动"
+                        autofillError -> "自动填充服务启动失败"
+                        else -> "浏览器扩展"
+                    },
                     color = quiet.muted,
                     style = QuietType.tiny,
                 )
@@ -2157,6 +2173,16 @@ private fun AutofillSheet(
     val scope = rememberCoroutineScope()
     val settings = runtime.settings
     var copiedLabel by remember { mutableStateOf<String?>(null) }
+    var extensionDir by remember { mutableStateOf<Path?>(null) }
+    var bundleError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(visible) {
+        if (visible) {
+            runCatching { ExtensionBundle.ensureExtracted() }
+                .onSuccess { extensionDir = it }
+                .onFailure { bundleError = friendlyError(it) }
+        }
+    }
 
     LaunchedEffect(copiedLabel) {
         if (copiedLabel != null) {
@@ -2176,7 +2202,6 @@ private fun AutofillSheet(
             QuietNotice(it, NoticeTone.Error)
             Spacer(Modifier.height(12.dp))
         }
-        if (settings == null) return@QuietSheet
 
         QuietNotice(
             "配对令牌只保存在本机。扩展只能通过它访问 127.0.0.1 上的 PWDog 接口；桌面程序锁定时不会返回密码。",
@@ -2185,9 +2210,59 @@ private fun AutofillSheet(
         Spacer(Modifier.height(14.dp))
         Column(verticalArrangement = Arrangement.spacedBy(11.dp)) {
             StepRow("1", "在 Chrome / Edge 打开扩展管理页，启用开发者模式。")
-            StepRow("2", "选择“加载已解压的扩展程序”，指向项目的 extension 目录。")
+            StepRow("2", "选择“加载已解压的扩展程序”，然后选择下面打开的扩展文件夹。")
             StepRow("3", "打开扩展设置，填写下面的接口地址和配对令牌。")
         }
+        Spacer(Modifier.height(16.dp))
+        Text("扩展文件夹", color = quiet.muted, style = QuietType.label)
+        Spacer(Modifier.height(6.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(quiet.surface2)
+                .border(1.dp, quiet.border, RoundedCornerShape(10.dp))
+                .padding(start = 11.dp, end = 5.dp, top = 5.dp, bottom = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            QIcon(QIcon.Folder, Modifier.size(15.dp), quiet.muted)
+            Text(
+                extensionDir?.toString() ?: "正在准备扩展文件...",
+                color = if (extensionDir == null) quiet.faint else quiet.text,
+                style = QuietType.body.copy(fontFamily = FontFamily("Consolas"), fontSize = 10.5.sp),
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (extensionDir != null) {
+                QuietIconButton(
+                    QIcon.Copy,
+                    {
+                        onCopy(scope, extensionDir?.toString().orEmpty())
+                        copiedLabel = "扩展文件夹路径已复制"
+                    },
+                    size = 28.dp,
+                    iconSize = 14.dp,
+                )
+                QuietIconButton(
+                    QIcon.External,
+                    {
+                        runCatching { Desktop.getDesktop().open(extensionDir?.toFile()) }
+                            .onFailure { bundleError = "无法打开扩展文件夹" }
+                    },
+                    size = 28.dp,
+                    iconSize = 14.dp,
+                    tint = quiet.accent,
+                )
+            }
+        }
+        if (bundleError != null) {
+            Spacer(Modifier.height(6.dp))
+            QuietNotice(bundleError, NoticeTone.Error)
+        }
+        if (settings == null) return@QuietSheet
+
         Spacer(Modifier.height(16.dp))
         Text("本地接口", color = quiet.muted, style = QuietType.label)
         Spacer(Modifier.height(6.dp))

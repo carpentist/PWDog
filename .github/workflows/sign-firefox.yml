@@ -1,0 +1,91 @@
+name: Sign Firefox Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach the signed XPI to (empty = latest release)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  sign:
+    name: Sign with AMO
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Assemble Firefox extension
+        id: package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/ext-firefox | Out-Null
+          Copy-Item "extension\*" "build/ext-firefox" -Recurse -Force -Exclude "manifest.json"
+          Copy-Item "extension\manifest.firefox.json" "build/ext-firefox\manifest.json" -Force
+          Remove-Item "build/ext-firefox\manifest.firefox.json" -Force -ErrorAction SilentlyContinue
+
+          $manifest = Get-Content "build/ext-firefox/manifest.json" -Raw | ConvertFrom-Json
+          "version=$($manifest.version)" >> $env:GITHUB_OUTPUT
+
+      - name: Sign with AMO
+        shell: pwsh
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:AMO_JWT_ISSUER) -or [string]::IsNullOrWhiteSpace($env:AMO_JWT_SECRET)) {
+            throw "Missing AMO_JWT_ISSUER / AMO_JWT_SECRET repository secrets. See docs/FIREFOX_SIGNING.md."
+          }
+
+          New-Item -ItemType Directory -Force dist | Out-Null
+          npx --yes web-ext sign `
+            --source-dir "build/ext-firefox" `
+            --artifacts-dir "dist" `
+            --api-key "$env:AMO_JWT_ISSUER" `
+            --api-secret "$env:AMO_JWT_SECRET" `
+            --channel unlisted
+          if ($LASTEXITCODE -ne 0) { throw "web-ext sign failed" }
+
+          $xpi = Get-ChildItem "dist" -Filter "*.xpi" | Select-Object -First 1
+          if ($null -eq $xpi) { throw "Signing did not produce an XPI" }
+
+          $target = "dist/PWDog-Firefox-Extension-${{ steps.package.outputs.version }}.xpi"
+          Copy-Item $xpi.FullName $target -Force
+          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLower()
+          "$hash  $(Split-Path $target -Leaf)" | Set-Content "dist/SHA256SUMS-firefox.txt" -Encoding utf8
+
+      - name: Upload signed XPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PWDog-Firefox-Signed
+          path: |
+            dist/PWDog-Firefox-Extension-*.xpi
+            dist/SHA256SUMS-firefox.txt
+          if-no-files-found: error
+
+      - name: Attach signed XPI to release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.event.inputs.tag }}"
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            $tag = gh release view --repo $env:GITHUB_REPOSITORY --json tagName -q ".tagName"
+          }
+          if ([string]::IsNullOrWhiteSpace($tag)) { throw "No release tag found" }
+
+          gh release upload $tag `
+            "dist/PWDog-Firefox-Extension-${{ steps.package.outputs.version }}.xpi" `
+            "dist/SHA256SUMS-firefox.txt" `
+            --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Failed to upload signed XPI" }

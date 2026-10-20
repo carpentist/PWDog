@@ -57,7 +57,7 @@ Verify that you have sufficient privileges to modify the security permissions fo
 - 打开 **设置 → 浏览器自动填充**，分别点击“打开 Chrome / Edge 扩展文件夹”或“打开 Firefox 扩展文件夹”。
 - **Chrome / Edge**：加载 `%LOCALAPPDATA%\PWDogData\extension\chromium`。
 - **Firefox 109+**：打开 `about:debugging#/runtime/this-firefox`，选择“临时载入附加组件”，选中 `%LOCALAPPDATA%\PWDogData\extension\firefox\manifest.json`。
-- Firefox 未签名扩展在浏览器重启后需要重新临时载入；后续可供 AMO 签名后永久安装。
+- Firefox 未签名扩展在浏览器重启后需要重新临时载入。要长期使用，请通过 `Sign Firefox Extension` 工作流生成签名 XPI，安装一次后即可跨重启保留；详见 [docs/FIREFOX_SIGNING.md](FIREFOX_SIGNING.md)。
 - Release 同时提供 `PWDog-Extension-<version>.zip`（Chromium）和 `PWDog-Firefox-Extension-<version>.zip`（Firefox）。
 
 ## 浏览器扩展连接失败

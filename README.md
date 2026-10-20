@@ -97,7 +97,9 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 桌面端锁定时不会返回密码，扩展也不会自动提交表单。
 
-Firefox 未签名扩展在浏览器重启后需要重新临时载入；后续可供 AMO 签名后永久安装。
+Firefox 未签名扩展在浏览器重启后需要重新临时载入。
+
+**长期使用**：Firefox 正式版要求扩展由 Mozilla 签名。仓库提供 `Sign Firefox Extension` 工作流：配置 AMO API 密钥后生成签名 XPI，安装一次后即可跨重启保留。详见 [docs/FIREFOX_SIGNING.md](docs/FIREFOX_SIGNING.md)。
 
 从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.3.0.zip`（Chromium）和 `PWDog-Firefox-Extension-0.3.0.zip`（Firefox）。
 
@@ -125,7 +127,7 @@ Firefox 未签名扩展在浏览器重启后需要重新临时载入；后续可
 - 这是个人项目，**尚未经过独立安全审计**。请先评估风险，不要直接用于高价值生产密钥。
 - JVM 无法保证密钥在内存中的彻底擦除；进程内存转储仍可能暴露运行中的密钥。
 - 程序内账户隔离不等于 Windows 用户隔离：同一 Windows 用户可以看到元数据，并尝试猜测其他本地账户的主密码。
-- Chrome / Edge 扩展以开发者模式加载；Firefox 扩展目前为临时附加组件，未上架 AMO。
+- Chrome / Edge 扩展以开发者模式加载；Firefox 正式版必须使用已签名 XPI 才能永久安装。签名工作流已提供，见 docs/FIREFOX_SIGNING.md。
 - 当前仅支持 Windows；Android 客户端在规划中。
 - 安装包未签名，暂无自动更新。
 

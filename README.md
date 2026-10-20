@@ -123,6 +123,13 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 恢复：退出 PWDog，用备份目录替换原 `PWDogData`，再启动。
 
+## 故障排查
+
+- 卸载提示 **Error 1926 / `E:\Config.Msi` 权限不足**：这是 Windows Installer 回滚文件的权限问题，不是密码库损坏。用管理员权限卸载，或修复 `Config.Msi` 权限。
+- 浏览器扩展找不到文件夹：0.2.1 起在设置 → 浏览器自动填充中点击“打开扩展文件夹”。
+- 端口 27831 被占用：关闭其他 PWDog 实例后重试。
+- 其他问题见 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)。
+
 ## 从源码构建
 
 需要 JDK 21 与 Windows。项目附带 Gradle Wrapper，不需要单独安装 Gradle。

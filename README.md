@@ -30,7 +30,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 - **现代密钥体系**：Argon2id 派生密码密钥，随机 DEK 加密密码库，AES-256-GCM 包装密钥。
 - **恢复密钥**：创建账户时展示一次；忘记主密码时可重置，不必重建密码库。
 - **Windows Hello 快速解锁**：由 DPAPI 保护，并绑定当前 Windows 用户。
-- **浏览器自动填充**：Chrome / Edge MV3 扩展，按需获取匹配条目，不自动提交表单。
+- **浏览器自动填充**：Chrome / Edge / Firefox MV3 扩展，按需获取匹配条目，不自动提交表单。
 - **浏览器 CSV 导入**：识别 Chrome / Edge、Firefox、Bitwarden 与通用 CSV，导入前预览并去重。
 - **外观**：深色 / 浅色 / 跟随系统，五种强调色，纯色 / 渐变 / 光晕背景，头像上传。
 - **桌面细节**：托盘常驻、开机自启、Ctrl+K 搜索、Ctrl+L 锁定、15 秒后清除剪贴板。
@@ -50,8 +50,8 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 选择：
 
-- `PWDog-0.2.2.msi` — 标准安装包，按所有用户安装，需要管理员权限，可选择任意盘符。
-- `PWDog-0.2.2-portable.zip` — 便携版，解压后运行，不需要安装。
+- `PWDog-0.3.0.msi` — 标准安装包，按所有用户安装，需要管理员权限，可选择任意盘符。
+- `PWDog-0.3.0-portable.zip` — 便携版，解压后运行，不需要安装。
 
 ### 标准安装（MSI）
 
@@ -62,7 +62,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 - **卸载入口**：Windows 设置 → 应用 → 已安装的应用 → 搜索 PWDog → 卸载。安装目录中没有 `uninstall.exe`，这是 MSI 的正常行为。
 - **卸载会删除当前 Windows 用户下的全部 PWDog 数据**，包括所有本地账户和密码库。卸载前请先备份。
 - 升级安装不会删除数据；只有明确卸载时才会清理。
-- 如果旧版是按当前用户安装的 0.2.1，请先备份数据并卸载旧版，再安装按所有用户安装的 0.2.2，避免两种安装范围并存。
+- 如果旧版是按当前用户安装的 0.2.1，请先备份数据并卸载旧版，再安装按所有用户安装的 0.3.0，避免两种安装范围并存。
 
 ### 安装到其他盘
 
@@ -88,16 +88,18 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 ### 浏览器扩展
 
-安装版已经内置扩展文件，不需要源码：
+安装版会同时解压 Chromium 和 Firefox 两套扩展：
 
 1. 打开 PWDog 设置 → 浏览器自动填充。
-2. 点击“打开扩展文件夹”。应用会把扩展解压到 `%LOCALAPPDATA%\PWDogData\extension` 并在资源管理器中打开。
-3. 在 Chrome / Edge 扩展管理页启用“开发者模式”，选择“加载已解压的扩展程序”，然后选中这个文件夹。
-4. 复制下面显示的接口地址与配对令牌，填入扩展设置。
+2. **Chrome / Edge**：点击“打开 Chrome / Edge 扩展文件夹”，在扩展管理页启用开发者模式，选择“加载已解压的扩展程序”，选中 `chromium` 文件夹。
+3. **Firefox 109+**：点击“打开 Firefox 扩展文件夹”，打开 `about:debugging#/runtime/this-firefox`，选择“临时载入附加组件”，选中 `firefox` 文件夹中的 `manifest.json`。
+4. 复制页面上的接口地址与配对令牌，填入扩展设置。
 
 桌面端锁定时不会返回密码，扩展也不会自动提交表单。
 
-从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.2.2.zip`。
+Firefox 未签名扩展在浏览器重启后需要重新临时载入；后续可供 AMO 签名后永久安装。
+
+从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.3.0.zip`（Chromium）和 `PWDog-Firefox-Extension-0.3.0.zip`（Firefox）。
 
 ## 安全模型
 
@@ -123,7 +125,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 - 这是个人项目，**尚未经过独立安全审计**。请先评估风险，不要直接用于高价值生产密钥。
 - JVM 无法保证密钥在内存中的彻底擦除；进程内存转储仍可能暴露运行中的密钥。
 - 程序内账户隔离不等于 Windows 用户隔离：同一 Windows 用户可以看到元数据，并尝试猜测其他本地账户的主密码。
-- 浏览器扩展以开发者模式加载，未上架扩展商店。
+- Chrome / Edge 扩展以开发者模式加载；Firefox 扩展目前为临时附加组件，未上架 AMO。
 - 当前仅支持 Windows；Android 客户端在规划中。
 - 安装包未签名，暂无自动更新。
 
@@ -165,9 +167,9 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 .\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip
 ```
 
-MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.2.2.msi`
+MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.3.0.msi`
 
-便携版输出：`desktopApp\build\compose\binaries\main\portable\PWDog-0.2.2-portable.zip`
+便携版输出：`desktopApp\build\compose\binaries\main\portable\PWDog-0.3.0-portable.zip`
 
 也可以直接用 IntelliJ IDEA 打开项目并运行 `com.pwdog.desktop.MainKt`。
 
@@ -188,7 +190,7 @@ $env:PWDOG_DATA_DIR="$PWD\.devdata"
 ```text
 shared/       加密、KDF、密钥包装、账户服务、加密数据库、条目仓库
 desktopApp/   Compose Desktop 界面、本地自动填充服务、Windows 集成、MSI 打包
-extension/    Chrome / Edge Manifest V3 扩展
+extension/    Chrome / Edge / Firefox Manifest V3 扩展
 design/       Quiet Vault 视觉参考（HTML）
 scripts/      本地数据清理等辅助脚本
 docs/         截图、架构与发布说明
@@ -201,6 +203,7 @@ docs/         截图、架构与发布说明
 - [ ] Android 客户端（共享加密与数据模型）
 - [ ] 可选的端到端加密同步
 - [ ] 密码健康检查与重复密码提示
+- [ ] Firefox AMO 上架与签名
 - [ ] 代码签名安装包
 - [ ] 自动更新
 

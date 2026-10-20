@@ -74,7 +74,15 @@ jobs:
           if ($null -eq $portable) { throw "Portable ZIP was not produced" }
           Copy-Item $portable.FullName "dist/PWDog-$version-portable.zip"
 
-          Compress-Archive -Path "extension\*" -DestinationPath "dist/PWDog-Extension-$version.zip" -Force
+          New-Item -ItemType Directory -Force build/ext-chromium | Out-Null
+          New-Item -ItemType Directory -Force build/ext-firefox | Out-Null
+          Copy-Item "extension\*" "build/ext-chromium" -Recurse -Force -Exclude "manifest.firefox.json"
+          Copy-Item "extension\*" "build/ext-firefox" -Recurse -Force -Exclude "manifest.json"
+          Copy-Item "extension\manifest.firefox.json" "build/ext-firefox\manifest.json" -Force
+          Remove-Item "build/ext-firefox\manifest.firefox.json" -Force -ErrorAction SilentlyContinue
+
+          Compress-Archive -Path "build/ext-chromium\*" -DestinationPath "dist/PWDog-Extension-$version.zip" -Force
+          Compress-Archive -Path "build/ext-firefox\*" -DestinationPath "dist/PWDog-Firefox-Extension-$version.zip" -Force
 
           Get-ChildItem dist -File | Where-Object { $_.Name -ne "SHA256SUMS.txt" } | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
@@ -104,6 +112,7 @@ jobs:
             "dist/PWDog-$version.msi" `
             "dist/PWDog-$version-portable.zip" `
             "dist/PWDog-Extension-$version.zip" `
+            "dist/PWDog-Firefox-Extension-$version.zip" `
             "dist/SHA256SUMS.txt" `
             --repo $env:GITHUB_REPOSITORY --clobber
           if ($LASTEXITCODE -ne 0) { throw "Failed to upload release assets" }

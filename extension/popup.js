@@ -10,7 +10,8 @@ let currentHost = null;
 let currentSettings = null;
 
 settingsButton.addEventListener("click", () => {
-  chrome.runtime.openOptionsPage();
+  const opened = pwdogBrowser.runtime.openOptionsPage();
+  if (opened && typeof opened.catch === "function") opened.catch(() => {});
   window.close();
 });
 
@@ -27,7 +28,7 @@ function normalizeApiUrl(value) {
 }
 
 async function loadSettings() {
-  const stored = await chrome.storage.local.get({
+  const stored = await pwdogCall(pwdogBrowser.storage.local, "get", {
     apiUrl: DEFAULT_API_URL,
     token: ""
   });
@@ -66,7 +67,7 @@ async function init() {
 
   let tabs = [];
   try {
-    tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    tabs = await pwdogCall(pwdogBrowser.tabs, "query", { active: true, currentWindow: true });
   } catch {
     tabs = [];
   }
@@ -79,7 +80,7 @@ async function init() {
 
   let pageInfo = null;
   try {
-    const results = await chrome.scripting.executeScript({
+    const results = await pwdogCall(pwdogBrowser.scripting, "executeScript", {
       target: { tabId: tab.id },
       func: () => ({
         host: location.hostname.toLowerCase(),
@@ -208,7 +209,7 @@ async function fillEntry(entryId, button) {
 
   let scriptResult = null;
   try {
-    const results = await chrome.scripting.executeScript({
+    const results = await pwdogCall(pwdogBrowser.scripting, "executeScript", {
       target: { tabId: activeTabId },
       func: fillInPage,
       args: [data.username || "", data.password || ""]

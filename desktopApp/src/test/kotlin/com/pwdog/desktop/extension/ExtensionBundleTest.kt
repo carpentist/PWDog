@@ -8,19 +8,21 @@ import kotlin.test.assertTrue
 
 class ExtensionBundleTest {
     @Test
-    fun extractsBundledExtensionAndRefreshesChangedFiles() {
+    fun extractsChromiumAndFirefoxBundlesAndRefreshesChangedFiles() {
         val base = Files.createTempDirectory("pwdog-extension-test-")
         try {
-            val directory = ExtensionBundle.ensureExtracted(base)
-            val manifest = directory.resolve("manifest.json")
-            assertTrue(Files.exists(manifest))
-            assertTrue(Files.readString(manifest).contains("\"manifest_version\": 3"))
-            assertTrue(Files.exists(directory.resolve("popup.js")))
-            assertTrue(Files.exists(directory.resolve("options.js")))
+            val folders = ExtensionBundle.ensureExtracted(base)
+            val chromiumManifest = folders.chromium.resolve("manifest.json")
+            val firefoxManifest = folders.firefox.resolve("manifest.json")
+            assertTrue(Files.exists(chromiumManifest))
+            assertTrue(Files.readString(chromiumManifest).contains("\"action\""))
+            assertTrue(Files.readString(firefoxManifest).contains("browser_specific_settings"))
+            assertTrue(Files.exists(folders.chromium.resolve("browser-api.js")))
+            assertTrue(Files.exists(folders.firefox.resolve("icons/icon128.png")))
 
-            Files.writeString(directory.resolve("popup.js"), "stale")
+            Files.writeString(folders.chromium.resolve("popup.js"), "stale")
             ExtensionBundle.ensureExtracted(base)
-            assertTrue(Files.readString(directory.resolve("popup.js")).contains("chrome"))
+            assertTrue(Files.readString(folders.chromium.resolve("popup.js")).contains("pwdogBrowser"))
         } finally {
             deleteRecursively(base)
         }

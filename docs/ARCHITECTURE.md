@@ -7,7 +7,7 @@
 ```text
 desktopApp   Compose Desktop UI、托盘、Windows Hello、自动填充 HTTP 服务、MSI 打包
 shared       纯 JVM 核心：Argon2id、密钥包装、账户注册表、加密数据库、条目仓库、CSV 导入
-extension    Chrome / Edge Manifest V3 扩展
+extension    Chrome / Edge / Firefox Manifest V3 扩展
 design       Quiet Vault 视觉参考，不参与构建
 ```
 
@@ -77,7 +77,7 @@ sequenceDiagram
 
 - 服务只绑定 `127.0.0.1:27831`。
 - 配对令牌是 32 字节随机值的十六进制形式，保存在 `%LOCALAPPDATA%\PWDogData\extension-token.txt`。
-- 扩展只能访问严格匹配当前 host 的条目；桌面端锁定时返回 `423 locked`。
+- Chrome / Edge 使用回调 API，Firefox 使用 Promise API（`browser-api.js`）；两者共享填充逻辑。扩展只能访问严格匹配当前 host 的条目；桌面端锁定时返回 `423 locked`。
 - 扩展不会自动登录或提交表单，填充后仍由用户确认。
 
 ## Windows 集成

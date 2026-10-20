@@ -27,6 +27,7 @@ A release needs all of these updated together:
 3. `CHANGELOG.md`
 4. `docs/RELEASE_NOTES_v<version>.md`
 5. `README.md` download filename and screenshots if the UI changed
+6. `extension/manifest.json` and `extension/manifest.firefox.json` version
 
 The Release workflow fails if the tag version and `packageVersion` do not match.
 
@@ -46,7 +47,8 @@ Outputs:
 
 - `PWDog-<version>.msi`
 - `PWDog-<version>-portable.zip`
-- `PWDog-Extension-<version>.zip` (contents of `extension/`)
+- `PWDog-Extension-<version>.zip` (Chromium)
+- `PWDog-Firefox-Extension-<version>.zip` (Firefox)
 - `SHA256SUMS.txt`
 
 The Release workflow builds these on `windows-latest` and uploads them with `gh release upload --clobber`.
@@ -54,18 +56,19 @@ The Release workflow builds these on `windows-latest` and uploads them with `gh 
 ## Tag and publish
 
 ```powershell
-git tag v0.2.2
-git push origin v0.2.2
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
-The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.2.md` and attaches the assets.
+The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.3.0.md` and attaches the assets.
 
 ## Before announcing
 
-- Verify the MSI installs per-user without administrator rights.
+- Verify the MSI installs per-machine with administrator rights and can target a non-system drive.
+- Verify the portable ZIP extracts and runs from `E:\PWDog`.
 - Verify upgrade from the previous version preserves `%LOCALAPPDATA%\PWDogData`.
 - Verify a true uninstall removes `%LOCALAPPDATA%\PWDogData` for the current Windows user.
-- Check that the browser extension still pairs and fills.
+- Check that Chromium and Firefox extensions both load, pair, and fill.
 - Confirm `SHA256SUMS.txt` matches the uploaded files.
 - Confirm no real vault data, tokens, or personal screenshots were committed.
 

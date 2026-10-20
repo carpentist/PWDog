@@ -94,6 +94,7 @@ import com.pwdog.desktop.design.SectionLabel
 import com.pwdog.desktop.design.SheetHeader
 import com.pwdog.desktop.design.ThemeModeSelector
 import com.pwdog.desktop.extension.ExtensionBundle
+import com.pwdog.desktop.extension.ExtensionFolders
 import com.pwdog.desktop.security.WindowsAutostart
 import com.pwdog.desktop.security.WindowsQuickUnlock
 import com.pwdog.desktop.settings.AppSettings
@@ -2173,13 +2174,13 @@ private fun AutofillSheet(
     val scope = rememberCoroutineScope()
     val settings = runtime.settings
     var copiedLabel by remember { mutableStateOf<String?>(null) }
-    var extensionDir by remember { mutableStateOf<Path?>(null) }
+    var extensionFolders by remember { mutableStateOf<ExtensionFolders?>(null) }
     var bundleError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(visible) {
         if (visible) {
             runCatching { ExtensionBundle.ensureExtracted() }
-                .onSuccess { extensionDir = it }
+                .onSuccess { extensionFolders = it }
                 .onFailure { bundleError = friendlyError(it) }
         }
     }
@@ -2209,54 +2210,51 @@ private fun AutofillSheet(
         )
         Spacer(Modifier.height(14.dp))
         Column(verticalArrangement = Arrangement.spacedBy(11.dp)) {
-            StepRow("1", "在 Chrome / Edge 打开扩展管理页，启用开发者模式。")
-            StepRow("2", "选择“加载已解压的扩展程序”，然后选择下面打开的扩展文件夹。")
-            StepRow("3", "打开扩展设置，填写下面的接口地址和配对令牌。")
+            StepRow("1", "Chrome / Edge：打开扩展管理页，启用开发者模式。")
+            StepRow("2", "Firefox 109+：打开 about:debugging#/runtime/this-firefox。")
+            StepRow("3", "Chrome / Edge 选择 chromium 文件夹；Firefox 选择 firefox 文件夹中的 manifest.json 临时载入。")
+            StepRow("4", "打开扩展设置，填写下面的接口地址和配对令牌。")
         }
         Spacer(Modifier.height(16.dp))
-        Text("扩展文件夹", color = quiet.muted, style = QuietType.label)
-        Spacer(Modifier.height(6.dp))
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(quiet.surface2)
-                .border(1.dp, quiet.border, RoundedCornerShape(10.dp))
-                .padding(start = 11.dp, end = 5.dp, top = 5.dp, bottom = 5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            QIcon(QIcon.Folder, Modifier.size(15.dp), quiet.muted)
-            Text(
-                extensionDir?.toString() ?: "正在准备扩展文件...",
-                color = if (extensionDir == null) quiet.faint else quiet.text,
-                style = QuietType.body.copy(fontFamily = FontFamily("Consolas"), fontSize = 10.5.sp),
-                modifier = Modifier.weight(1f),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (extensionDir != null) {
-                QuietIconButton(
-                    QIcon.Copy,
-                    {
-                        onCopy(scope, extensionDir?.toString().orEmpty())
-                        copiedLabel = "扩展文件夹路径已复制"
-                    },
-                    size = 28.dp,
-                    iconSize = 14.dp,
-                )
-                QuietIconButton(
-                    QIcon.External,
-                    {
-                        runCatching { Desktop.getDesktop().open(extensionDir?.toFile()) }
-                            .onFailure { bundleError = "无法打开扩展文件夹" }
-                    },
-                    size = 28.dp,
-                    iconSize = 14.dp,
-                    tint = quiet.accent,
-                )
-            }
-        }
+        ExtensionFolderRow(
+            label = "Chrome / Edge 扩展文件夹",
+            path = extensionFolders?.chromium,
+            onCopy = {
+                extensionFolders?.chromium?.let {
+                    onCopy(scope, it.toString())
+                    copiedLabel = "Chromium 扩展路径已复制"
+                }
+            },
+            onOpen = {
+                extensionFolders?.chromium?.let {
+                    runCatching { Desktop.getDesktop().open(it.toFile()) }
+                        .onFailure { bundleError = "无法打开 Chromium 扩展文件夹" }
+                }
+            },
+        )
+        Spacer(Modifier.height(12.dp))
+        ExtensionFolderRow(
+            label = "Firefox 扩展文件夹",
+            path = extensionFolders?.firefox,
+            onCopy = {
+                extensionFolders?.firefox?.let {
+                    onCopy(scope, it.toString())
+                    copiedLabel = "Firefox 扩展路径已复制"
+                }
+            },
+            onOpen = {
+                extensionFolders?.firefox?.let {
+                    runCatching { Desktop.getDesktop().open(it.toFile()) }
+                        .onFailure { bundleError = "无法打开 Firefox 扩展文件夹" }
+                }
+            },
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Firefox 未签名扩展通过“临时载入附加组件”加载，浏览器重启后需要重新载入；上架 AMO 后可永久安装。",
+            color = quiet.faint,
+            style = QuietType.tiny,
+        )
         if (bundleError != null) {
             Spacer(Modifier.height(6.dp))
             QuietNotice(bundleError, NoticeTone.Error)
@@ -2286,6 +2284,50 @@ private fun AutofillSheet(
             "扩展不会自动提交表单。填充完成后仍由你确认登录。",
             NoticeTone.Info,
         )
+    }
+}
+
+@Composable
+private fun ExtensionFolderRow(
+    label: String,
+    path: Path?,
+    onCopy: () -> Unit,
+    onOpen: () -> Unit,
+) {
+    val quiet = LocalQuiet.current
+    Column {
+        Text(label, color = quiet.muted, style = QuietType.label)
+        Spacer(Modifier.height(6.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(quiet.surface2)
+                .border(1.dp, quiet.border, RoundedCornerShape(10.dp))
+                .padding(start = 11.dp, end = 5.dp, top = 5.dp, bottom = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            QIcon(QIcon.Folder, Modifier.size(15.dp), quiet.muted)
+            Text(
+                path?.toString() ?: "正在准备扩展文件...",
+                color = if (path == null) quiet.faint else quiet.text,
+                style = QuietType.body.copy(fontFamily = FontFamily("Consolas"), fontSize = 10.5.sp),
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (path != null) {
+                QuietIconButton(QIcon.Copy, onCopy, size = 28.dp, iconSize = 14.dp)
+                QuietIconButton(
+                    QIcon.External,
+                    onOpen,
+                    size = 28.dp,
+                    iconSize = 14.dp,
+                    tint = quiet.accent,
+                )
+            }
+        }
     }
 }
 

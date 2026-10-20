@@ -25,7 +25,7 @@ function normalizeApiUrl(value) {
 }
 
 async function load() {
-  const stored = await chrome.storage.local.get({
+  const stored = await pwdogCall(pwdogBrowser.storage.local, "get", {
     apiUrl: DEFAULT_API_URL,
     token: ""
   });
@@ -40,7 +40,7 @@ saveButton.addEventListener("click", async () => {
     if (token.length < 32) {
       throw new Error("配对令牌看起来不完整。");
     }
-    await chrome.storage.local.set({ apiUrl, token });
+    await pwdogCall(pwdogBrowser.storage.local, "set", { apiUrl, token });
     apiUrlInput.value = apiUrl;
     setStatus("已保存。", "ok");
   } catch (error) {

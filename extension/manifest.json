@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PWDog Autofill",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Fill credentials from the local PWDog desktop app.",
   "permissions": [
     "activeTab",
@@ -13,7 +13,20 @@
   ],
   "action": {
     "default_title": "PWDog 自动填充",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "96": "icons/icon96.png",
+      "128": "icons/icon128.png"
+    }
   },
-  "options_page": "options.html"
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
+  }
 }

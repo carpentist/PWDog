@@ -50,13 +50,15 @@ Verify that you have sufficient privileges to modify the security permissions fo
 
 这是正常的数据目录。重新安装 PWDog 后，它仍会读取这里的账户。需要彻底删除时，先退出 PWDog，再手动删除该目录。
 
-## 浏览器扩展找不到 `extension` 文件夹
+## 浏览器扩展找不到文件夹 / Firefox 无法加载
 
-0.2.0 安装包没有携带扩展文件，已在 0.2.1 修复：
+0.2.1 起安装包内置扩展；0.3.0 起同时解压 Chromium 和 Firefox 两套：
 
-- 安装 0.2.1 后，打开 **设置 → 浏览器自动填充 → 打开扩展文件夹**。
-- 扩展会解压到 `%LOCALAPPDATA%\PWDogData\extension`。
-- 也可以在 Release 中下载 `PWDog-Extension-<version>.zip` 解压后加载。
+- 打开 **设置 → 浏览器自动填充**，分别点击“打开 Chrome / Edge 扩展文件夹”或“打开 Firefox 扩展文件夹”。
+- **Chrome / Edge**：加载 `%LOCALAPPDATA%\PWDogData\extension\chromium`。
+- **Firefox 109+**：打开 `about:debugging#/runtime/this-firefox`，选择“临时载入附加组件”，选中 `%LOCALAPPDATA%\PWDogData\extension\firefox\manifest.json`。
+- Firefox 未签名扩展在浏览器重启后需要重新临时载入；后续可供 AMO 签名后永久安装。
+- Release 同时提供 `PWDog-Extension-<version>.zip`（Chromium）和 `PWDog-Firefox-Extension-<version>.zip`（Firefox）。
 
 ## 浏览器扩展连接失败
 

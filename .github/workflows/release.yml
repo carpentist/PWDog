@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Resolve release tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.inputs.tag }}"
+          if ([string]::IsNullOrWhiteSpace($tag)) { $tag = "${{ github.ref_name }}" }
+          $version = $tag.TrimStart("v")
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Run tests
+        shell: pwsh
+        run: .\gradlew.bat :shared:jvmTest :desktopApp:test --no-daemon
+
+      - name: Build MSI
+        shell: pwsh
+        run: .\gradlew.bat :desktopApp:packageMsiWithCleanup --no-daemon
+
+      - name: Package release assets
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $gradle = Get-Content desktopApp/build.gradle.kts -Raw
+          if ($gradle -notmatch 'packageVersion\s*=\s*"([^"]+)"') {
+            throw "Could not read packageVersion from desktopApp/build.gradle.kts"
+          }
+          $appVersion = $Matches[1]
+          if ($appVersion -ne $version) {
+            throw "Tag version $version does not match packageVersion $appVersion"
+          }
+
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $msi = Get-ChildItem "desktopApp/build/compose/binaries/main/msi/*.msi" | Select-Object -First 1
+          if ($null -eq $msi) { throw "MSI was not produced" }
+          Copy-Item $msi.FullName "dist/PWDog-$version.msi"
+          Compress-Archive -Path "extension\*" -DestinationPath "dist/PWDog-Extension-$version.zip" -Force
+
+          Get-ChildItem dist -File | Where-Object { $_.Name -ne "SHA256SUMS.txt" } | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)"
+          } | Set-Content "dist/SHA256SUMS.txt" -Encoding utf8
+
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $version = "${{ steps.version.outputs.version }}"
+          $notes = "docs/RELEASE_NOTES_$tag.md"
+
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -ne 0) {
+            if (Test-Path $notes) {
+              gh release create $tag --repo $env:GITHUB_REPOSITORY --title "PWDog $tag" --notes-file $notes --target "${{ github.sha }}"
+            } else {
+              gh release create $tag --repo $env:GITHUB_REPOSITORY --title "PWDog $tag" --generate-notes --target "${{ github.sha }}"
+            }
+            if ($LASTEXITCODE -ne 0) { throw "Failed to create release" }
+          }
+
+          gh release upload $tag `
+            "dist/PWDog-$version.msi" `
+            "dist/PWDog-Extension-$version.zip" `
+            "dist/SHA256SUMS.txt" `
+            --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Failed to upload release assets" }

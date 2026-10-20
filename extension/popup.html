@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PWDog 自动填充</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="popup">
+  <header class="popup-header">
+    <div>
+      <h1>PWDog</h1>
+      <div class="host">当前站点：<span id="host">-</span></div>
+    </div>
+    <button id="open-settings" class="link" type="button">设置</button>
+  </header>
+
+  <div id="status" class="status">正在加载...</div>
+  <div id="entries" class="entries"></div>
+
+  <footer class="popup-footer">
+    同一网站有多个账户时会全部列出，请手动选择。密码只在点击“填充”时获取，不会自动提交表单。
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

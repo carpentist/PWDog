@@ -1,0 +1,83 @@
+name: Bug report
+description: Report a reproducible problem with PWDog
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do **not** paste real passwords, recovery keys, pairing tokens, or vault files.
+
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Sensitive data
+      options:
+        - label: I removed all real credentials and local vault data from this report.
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: PWDog version
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 23H2 / Windows 10 22H2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Login / accounts
+        - Vault entries
+        - Import / export
+        - Browser extension / autofill
+        - Windows Hello / DPAPI
+        - Theme / layout
+        - Installer / uninstall
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Remove secrets and personal data first.
+    validations:
+      required: false

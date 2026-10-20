@@ -1,0 +1,2570 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark" data-accent="purple">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PWDog — Quiet Vault v1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-ui: "Manrope", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      --font-display: "Newsreader", "Noto Serif SC", "SimSun", Georgia, serif;
+      --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+      --bg: #f4f1ea;
+      --surface: #fbfaf7;
+      --surface-2: #f0ece3;
+      --surface-3: #e8e2d8;
+      --text: #1a1b1f;
+      --muted: #6f7278;
+      --faint: #999b9e;
+      --border: rgba(26, 27, 31, 0.10);
+      --border-strong: rgba(26, 27, 31, 0.18);
+      --shadow: 0 20px 60px rgba(45, 39, 29, 0.13);
+      --shadow-soft: 0 1px 2px rgba(45, 39, 29, 0.06);
+
+      --success: #2f7d55;
+      --danger: #b3443b;
+      --warning: #a8681f;
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+
+      --accent: #6a4b8c;
+      --accent-strong: #543a73;
+      --accent-soft: #efe7f7;
+      --accent-contrast: #ffffff;
+      --ring: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #111318;
+      --surface: #161a20;
+      --surface-2: #1c222a;
+      --surface-3: #242b34;
+      --text: #edf1f5;
+      --muted: #96a0ac;
+      --faint: #6c7784;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.24);
+      --success: #71c891;
+      --danger: #ff9b92;
+      --warning: #e8b86d;
+      color-scheme: dark;
+    }
+
+    html[data-accent="purple"] {
+      --accent: #6a4b8c; --accent-strong: #543a73; --accent-soft: #efe7f7; --accent-contrast: #fff;
+    }
+    html[data-theme="dark"][data-accent="purple"] {
+      --accent: #cbb4e8; --accent-strong: #e5d7f5; --accent-soft: #2e243b; --accent-contrast: #1a1124;
+    }
+    html[data-accent="blue"] {
+      --accent: #2563eb; --accent-strong: #1d4ed8; --accent-soft: #e2ecff; --accent-contrast: #fff;
+    }
+    html[data-theme="dark"][data-accent="blue"] {
+      --accent: #a9c7ff; --accent-strong: #d2e2ff; --accent-soft: #1b2c49; --accent-contrast: #0c1930;
+    }
+    html[data-accent="green"] {
+      --accent: #2f7d4f; --accent-strong: #24663f; --accent-soft: #e0f2e5; --accent-contrast: #fff;
+    }
+    html[data-theme="dark"][data-accent="green"] {
+      --accent: #a8d8b6; --accent-strong: #d0efda; --accent-soft: #1d3526; --accent-contrast: #0b1c11;
+    }
+    html[data-accent="orange"] {
+      --accent: #b2622a; --accent-strong: #95501f; --accent-soft: #f9e8dc; --accent-contrast: #fff;
+    }
+    html[data-theme="dark"][data-accent="orange"] {
+      --accent: #f0b17b; --accent-strong: #ffd3ad; --accent-soft: #3a2718; --accent-contrast: #2a1808;
+    }
+    html[data-accent="red"] {
+      --accent: #b3443b; --accent-strong: #94362f; --accent-soft: #f8e4e1; --accent-contrast: #fff;
+    }
+    html[data-theme="dark"][data-accent="red"] {
+      --accent: #f0a9a3; --accent-strong: #ffd0cb; --accent-soft: #3a2220; --accent-contrast: #2b1210;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+    [hidden] { display: none !important; }
+    button, input { font: inherit; }
+    button { border: 0; background: none; color: inherit; cursor: pointer; }
+    button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+      outline: none;
+      box-shadow: var(--ring);
+      border-radius: 8px;
+    }
+    ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+
+    .icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    .icon-sm { width: 15px; height: 15px; }
+    .icon-lg { width: 24px; height: 24px; }
+    .eyebrow {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      line-height: 1.3;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .muted { color: var(--muted); }
+    .app-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background: var(--bg);
+      transition: background 420ms ease;
+    }
+    body[data-bg="gradient"] .app-bg {
+      background:
+        linear-gradient(132deg,
+          var(--bg) 0%,
+          color-mix(in srgb, var(--accent) 8%, var(--bg)) 46%,
+          color-mix(in srgb, var(--accent-strong) 5%, var(--bg)) 72%,
+          var(--bg) 100%);
+    }
+    body[data-bg="glow"] .app-bg {
+      background:
+        radial-gradient(52% 54% at 86% 4%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 72%),
+        radial-gradient(42% 52% at 4% 98%, color-mix(in srgb, var(--accent-strong) 11%, transparent), transparent 76%),
+        var(--bg);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.14) inset, 0 8px 24px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    .btn-primary:hover { background: var(--accent-strong); }
+    .btn-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+    }
+    .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface-2); }
+    .btn-quiet {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+    .btn-quiet:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface); }
+    .btn-block { width: 100%; }
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      color: var(--muted);
+      transition: color 150ms ease, background 150ms ease;
+      flex: none;
+    }
+    .icon-btn:hover { color: var(--text); background: var(--surface-2); }
+    .icon-btn.danger:hover { color: var(--danger); }
+    .link {
+      padding: 0;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      transition: color 150ms ease;
+    }
+    .link:hover { color: var(--accent-strong); }
+
+    /* Login */
+    .login-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(460px, 0.92fr);
+      min-height: 100vh;
+      position: relative;
+    }
+    .brand-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: clamp(30px, 4.3vw, 68px);
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .brand-panel::before {
+      content: "";
+      position: absolute;
+      width: 760px;
+      height: 760px;
+      left: -250px;
+      top: -320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 68%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+    .brand-top { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+      color: var(--accent-contrast);
+      box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+    .brand-word { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+    .brand-badge {
+      margin-left: auto;
+      padding: 5px 9px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      background: color-mix(in srgb, var(--surface) 55%, transparent);
+    }
+    .brand-copy { position: relative; z-index: 2; margin-top: clamp(38px, 6vh, 72px); max-width: 570px; }
+    .brand-copy p { max-width: 430px; margin: 14px 0 0; color: var(--muted); font-size: 15px; line-height: 1.7; text-wrap: pretty; }
+    .brand-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      background: color-mix(in srgb, var(--surface) 52%, transparent);
+    }
+    .chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--success); }
+    .vault-visual { position: relative; z-index: 1; width: min(410px, 58%); aspect-ratio: 1; margin: auto; margin-top: 16px; margin-bottom: 8px; flex: none; }
+    .orbit { position: absolute; border-radius: 50%; border: 1px solid var(--border); }
+    .orbit-1 { inset: 0; border-color: color-mix(in srgb, var(--accent) 31%, transparent); }
+    .orbit-2 { inset: 12%; border-color: var(--border-strong); }
+    .orbit-3 { inset: 24%; border-color: color-mix(in srgb, var(--accent) 22%, transparent); }
+    .orbit::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      top: 50%;
+      left: -2px;
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+    .orbit-2::after { top: 10%; left: auto; right: 8%; opacity: .55; }
+    .orbit-3::after { top: auto; bottom: 2%; left: 24%; opacity: .45; }
+    .vault-core {
+      position: absolute;
+      inset: 33%;
+      display: grid;
+      place-items: center;
+      border-radius: 30%;
+      background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+      color: var(--accent-contrast);
+      box-shadow: 0 26px 70px color-mix(in srgb, var(--accent) 26%, transparent), 0 1px 0 rgba(255,255,255,.24) inset;
+    }
+    .vault-core .icon { width: 34%; height: 34%; stroke-width: 1.5; }
+    .float-tag {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--surface) 76%, transparent);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+    }
+    .float-a { top: 17%; right: 1%; }
+    .float-b { bottom: 20%; left: 0; }
+    .float-c { bottom: 5%; right: 10%; }
+    .brand-footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      margin-top: auto;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+    }
+    .security-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+    .security-line .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 14%, transparent); }
+    .palette-label { margin-bottom: 7px; color: var(--faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .palette { display: flex; align-items: center; gap: 8px; }
+    .swatch {
+      position: relative;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.17);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    .swatch:hover { transform: scale(1.12); }
+    .swatch.active { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+    .swatch[data-accent="purple"] { background: #7b5aa6; }
+    .swatch[data-accent="blue"] { background: #3b6eea; }
+    .swatch[data-accent="green"] { background: #3d8154; }
+    .swatch[data-accent="orange"] { background: #b2622a; }
+    .swatch[data-accent="red"] { background: #b3443b; }
+
+    .auth-panel {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: clamp(28px, 4.5vw, 64px);
+      background: color-mix(in srgb, var(--surface) 44%, transparent);
+      backdrop-filter: blur(24px);
+    }
+    .auth-inner { width: min(450px, 100%); }
+    .auth-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .auth-head h2 { margin: 10px 0 6px; font-family: var(--font-display); font-size: 36px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; }
+    .auth-head p:last-child { margin: 0; font-size: 12px; }
+    .account-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 24px; }
+    .account-card {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
+      text-align: left;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+    .account-card:hover { transform: translateY(-1px); border-color: var(--border-strong); }
+    .account-card.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+    .avatar {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: none;
+      border-radius: 50%;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 18px;
+      line-height: 1;
+      box-shadow: 0 1px 0 rgba(255,255,255,.2) inset;
+    }
+    .avatar.theme-avatar { background: linear-gradient(145deg, var(--accent), var(--accent-strong)); }
+    .avatar.work-avatar { background: linear-gradient(145deg, #587078, #35464d); }
+    .account-meta { min-width: 0; flex: 1; }
+    .account-meta strong { display: block; font-size: 13px; font-weight: 650; letter-spacing: -0.01em; }
+    .account-meta small { display: block; margin-top: 2px; color: var(--muted); font-size: 10.5px; }
+    .account-check { color: var(--accent); opacity: 0; transition: opacity 150ms ease; }
+    .account-card.selected .account-check { opacity: 1; }
+    .auth-form label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .password-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      height: 48px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+    .password-wrap:focus-within { border-color: var(--accent); box-shadow: var(--ring); }
+    .password-wrap .icon { color: var(--muted); }
+    .password-wrap input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 13px; letter-spacing: 0.02em; }
+    .password-wrap input::placeholder { color: var(--faint); letter-spacing: 0; }
+    .hint { margin: 7px 0 15px; color: var(--faint); font-size: 10.5px; }
+    .auth-form .btn + .btn { margin-top: 9px; }
+    .auth-links { display: flex; align-items: center; gap: 18px; margin-top: 14px; }
+    .micro-note { display: flex; align-items: center; gap: 7px; margin: 22px 0 0; color: var(--faint); font-size: 10.5px; }
+    .micro-note .icon { color: var(--success); }
+    .demo-note { margin: 12px 0 0; color: var(--faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; }
+
+    /* Vault */
+    .app-shell { display: grid; grid-template-columns: 244px minmax(0, 1fr) 392px; height: 100vh; min-height: 720px; }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 23px 16px 18px;
+      border-right: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 58%, transparent);
+      backdrop-filter: blur(22px);
+      overflow-y: auto;
+    }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 0 8px; }
+    .sidebar-brand .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
+    .sidebar-brand .brand-word { font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: -0.03em; }
+    .account-switcher {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--surface) 70%, transparent);
+      text-align: left;
+    }
+    .account-switcher:hover { border-color: var(--border-strong); }
+    .account-switcher .avatar { width: 30px; height: 30px; font-size: 14px; }
+    .account-switcher .meta { flex: 1; min-width: 0; }
+    .account-switcher strong { display: block; font-size: 12px; font-weight: 650; }
+    .account-switcher small { display: block; color: var(--muted); font-size: 9.5px; }
+    .account-switcher .icon { color: var(--faint); }
+    .nav { display: flex; flex-direction: column; gap: 3px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 9px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: left;
+      transition: color 150ms ease, background 150ms ease;
+    }
+    .nav-item:hover { color: var(--text); background: var(--surface-2); }
+    .nav-item.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+    .nav-item .icon { width: 16px; height: 16px; }
+    .nav-count { margin-left: auto; color: var(--faint); font-family: var(--font-mono); font-size: 10px; }
+    .nav-item.active .nav-count { color: var(--accent); }
+    .vault-status {
+      margin-top: 3px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--surface) 54%, transparent);
+    }
+    .status-top { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 650; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 14%, transparent); }
+    .vault-status p { margin: 7px 0 9px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .status-line { display: flex; align-items: center; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); color: var(--muted); font-size: 9.5px; }
+    .status-line .icon { width: 13px; height: 13px; color: var(--accent); }
+    .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+    .sidebar-bottom .btn { min-height: 36px; font-size: 11.5px; }
+
+    .workspace { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+    .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 28px 0; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex: 1;
+      max-width: 590px;
+      height: 40px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .search-box:focus-within { border-color: var(--accent); box-shadow: var(--ring); background: var(--surface); }
+    .search-box .icon { color: var(--muted); }
+    .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 12px; }
+    .search-box input::placeholder { color: var(--faint); }
+    .search-box kbd {
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--faint);
+      font-family: var(--font-mono);
+      font-size: 8px;
+      white-space: nowrap;
+    }
+    .top-actions { display: flex; align-items: center; gap: 7px; margin-left: auto; }
+    .top-actions .btn { min-height: 40px; padding: 0 12px; font-size: 11.5px; }
+    .workspace-inner { flex: 1; overflow-y: auto; padding: 24px 28px 38px; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+    .page-heading h1 { margin: 7px 0 5px; font-family: var(--font-display); font-size: 35px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+    .page-heading p { margin: 0; font-size: 11px; }
+    .view-meta { color: var(--faint); font-family: var(--font-mono); font-size: 9px; padding-bottom: 4px; white-space: nowrap; }
+    .site-groups { display: flex; flex-direction: column; gap: 11px; }
+    .site-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      box-shadow: var(--shadow-soft);
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+      animation: card-in 320ms cubic-bezier(.22,1,.36,1) both;
+    }
+    .site-card:hover { border-color: var(--border-strong); background: var(--surface); }
+    @keyframes card-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .site-head { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border-bottom: 1px solid var(--border); }
+    .site-letter {
+      display: grid;
+      place-items: center;
+      width: 29px;
+      height: 29px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      flex: none;
+    }
+    .site-domain { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: -0.01em; }
+    .site-count { color: var(--faint); font-size: 10px; }
+    .site-add {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 10px;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+    .site-add:hover { color: var(--accent); background: var(--accent-soft); }
+    .entry-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 13px;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .entry-row + .entry-row { border-top: 1px solid var(--border); }
+    .entry-row:hover { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+    .entry-row.selected { background: var(--accent-soft); }
+    .entry-main { flex: 1; min-width: 0; }
+    .entry-title { font-size: 12.5px; font-weight: 650; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .entry-user { margin-top: 1px; color: var(--muted); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .entry-actions { display: flex; align-items: center; gap: 1px; opacity: 0; transition: opacity 150ms ease; }
+    .entry-row:hover .entry-actions, .entry-row:focus-within .entry-actions, .entry-row.selected .entry-actions { opacity: 1; }
+    .entry-actions .icon-btn { width: 27px; height: 27px; }
+    .entry-actions .icon { width: 14px; height: 14px; }
+    .empty-search { padding: 52px 20px; text-align: center; color: var(--muted); }
+    .empty-search .icon { width: 28px; height: 28px; color: var(--faint); margin-bottom: 12px; }
+    .empty-search p { margin: 0; font-size: 12px; }
+
+    .detail-panel {
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 24px;
+      border-left: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 62%, transparent);
+      backdrop-filter: blur(22px);
+    }
+    .detail-head { display: flex; align-items: center; gap: 12px; margin-bottom: 23px; }
+    .detail-monogram {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      flex: none;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 25px;
+      font-weight: 600;
+    }
+    .detail-head h2 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.02em; }
+    .detail-head p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .detail-kicker { color: var(--accent); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+    .detail-section { margin-top: 20px; }
+    .detail-label { margin-bottom: 7px; color: var(--faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase; }
+    .detail-value-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--surface) 72%, transparent);
+    }
+    .detail-value { flex: 1; min-width: 0; font-size: 12px; overflow-wrap: anywhere; }
+    .secret-box { display: flex; align-items: center; gap: 8px; padding: 12px 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+    .secret-value { flex: 1; min-width: 0; color: var(--text); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; overflow-wrap: anywhere; }
+    .secret-value.masked { letter-spacing: 0.18em; color: var(--muted); }
+    .detail-actions { display: flex; gap: 7px; margin-top: 24px; }
+    .detail-actions .btn { flex: 1; min-height: 38px; font-size: 11.5px; }
+    .detail-note {
+      margin-top: 21px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--surface) 56%, transparent);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .detail-meta { display: grid; gap: 10px; margin-top: 20px; }
+    .detail-meta div { display: flex; justify-content: space-between; gap: 18px; font-size: 10.5px; }
+    .detail-meta span:first-child { color: var(--faint); }
+    .detail-meta span:last-child { color: var(--muted); text-align: right; }
+    .empty-detail { padding-top: 80px; text-align: center; color: var(--muted); }
+    .empty-detail .icon { width: 34px; height: 34px; color: var(--faint); margin-bottom: 14px; }
+    .empty-detail h2 { margin: 0 0 6px; font-family: var(--font-display); font-size: 23px; font-weight: 500; color: var(--text); }
+    .empty-detail p { margin: 0; font-size: 11px; }
+
+    /* Settings */
+    .sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(7, 9, 12, .46); opacity: 0; pointer-events: none; transition: opacity 220ms ease; }
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .settings-sheet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 50;
+      width: min(510px, 100vw);
+      height: 100vh;
+      padding: 27px 26px 36px;
+      overflow-y: auto;
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: -24px 0 80px rgba(0,0,0,.18);
+      transform: translateX(102%);
+      transition: transform 300ms cubic-bezier(.22,1,.36,1);
+    }
+    .settings-sheet.open { transform: translateX(0); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .sheet-head h2 { margin: 0; font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -0.035em; }
+    .sheet-section { padding: 19px 0; border-top: 1px solid var(--border); }
+    .sheet-section:first-of-type { border-top: 0; padding-top: 0; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; font-weight: 700; }
+    .profile-row { display: flex; align-items: center; gap: 13px; padding: 13px; border: 1px solid var(--border); border-radius: 13px; background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+    .profile-row .avatar { width: 48px; height: 48px; font-size: 21px; }
+    .profile-row .meta { flex: 1; }
+    .profile-row strong { display: block; font-size: 13px; }
+    .profile-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 10.5px; }
+    .theme-options { display: flex; gap: 7px; }
+    .mode-btn, .bg-btn {
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+    .mode-btn:hover, .bg-btn:hover { color: var(--text); border-color: var(--border-strong); }
+    .mode-btn.active, .bg-btn.active { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+    .sheet-palette { margin-top: 11px; }
+    .sheet-palette .palette-label { margin-bottom: 7px; }
+    .settings-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .settings-row:last-child { border-bottom: 0; }
+    .settings-row .icon { color: var(--muted); }
+    .settings-row .row-main { flex: 1; }
+    .settings-row strong { display: block; font-size: 11.5px; font-weight: 650; }
+    .settings-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .settings-row .row-value { color: var(--muted); font-size: 10.5px; }
+    .danger-text { color: var(--danger) !important; }
+    .data-path { margin-top: 9px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--muted); font-family: var(--font-mono); font-size: 9.5px; overflow-wrap: anywhere; }
+
+    /* Forms, dialogs, import */
+    .form-sheet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 55;
+      width: min(540px, 100vw);
+      height: 100vh;
+      padding: 27px 26px 32px;
+      overflow-y: auto;
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: -24px 0 80px rgba(0,0,0,.2);
+      transform: translateX(102%);
+      transition: transform 300ms cubic-bezier(.22,1,.36,1);
+    }
+    .form-sheet.open { transform: translateX(0); }
+    .entry-form, .account-form, .password-form { display: flex; flex-direction: column; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field > span { color: var(--muted); font-size: 10.5px; font-weight: 600; }
+    .field input, .field textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--surface-2) 52%, var(--surface));
+      color: var(--text);
+      outline: none;
+      font-size: 12.5px;
+      transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+    .field textarea { min-height: 92px; resize: vertical; line-height: 1.6; }
+    .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: var(--ring); background: var(--surface); }
+    .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+    .field .password-wrap { height: 44px; background: color-mix(in srgb, var(--surface-2) 52%, var(--surface)); }
+    .field .password-wrap:focus-within { background: var(--surface); }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-actions-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .form-hint { margin: 0; color: var(--faint); font-size: 10px; line-height: 1.5; }
+    .form-error { margin: 0; color: var(--danger); font-size: 11px; }
+    .form-actions { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .form-actions .btn { min-height: 42px; }
+    .form-actions .btn-primary { flex: 1; }
+    .btn-danger { background: var(--danger); color: #fff; box-shadow: 0 8px 22px color-mix(in srgb, var(--danger) 22%, transparent); }
+    .btn-danger:hover { filter: brightness(1.06); }
+    .notice {
+      padding: 11px 12px;
+      border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--text);
+      font-size: 10.5px;
+      line-height: 1.6;
+    }
+    .notice strong { color: var(--accent); font-weight: 650; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .avatar.with-image { background: var(--surface-2); }
+    .empty-vault { padding: 74px 20px; text-align: center; }
+    .empty-vault .empty-mark { width: 62px; height: 62px; margin: 0 auto 16px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 19px; background: var(--surface); color: var(--faint); }
+    .empty-vault h2 { margin: 0 0 7px; font-family: var(--font-display); font-size: 26px; font-weight: 500; letter-spacing: -0.03em; }
+    .empty-vault p { margin: 0 0 18px; color: var(--muted); font-size: 11.5px; }
+    .empty-actions { display: flex; justify-content: center; gap: 8px; }
+    .import-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .import-stat { padding: 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+    .import-stat strong { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+    .import-stat small { display: block; margin-top: 1px; color: var(--muted); font-size: 9.5px; }
+    .import-list { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .import-row { display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-top: 1px solid var(--border); }
+    .import-row:first-child { border-top: 0; }
+    .import-row .site-letter { width: 27px; height: 27px; border-radius: 8px; font-size: 14px; }
+    .import-row .row-main { flex: 1; min-width: 0; }
+    .import-row strong { display: block; font-size: 11.5px; }
+    .import-row small { display: block; color: var(--muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .recovery-key {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 40%, var(--border));
+      border-radius: 11px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      overflow-wrap: anywhere;
+    }
+    .recovery-key code { flex: 1; font-family: inherit; font-size: inherit; }
+    .dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 85;
+      display: grid;
+      place-items: center;
+      background: rgba(7, 9, 12, .54);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+    .dialog-backdrop.open { opacity: 1; pointer-events: auto; }
+    .confirm-dialog {
+      width: min(410px, calc(100vw - 32px));
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transform: translateY(8px) scale(.99);
+      transition: transform 180ms ease;
+    }
+    .dialog-backdrop.open .confirm-dialog { transform: translateY(0) scale(1); }
+    .confirm-dialog h2 { margin: 0 0 7px; font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
+    .confirm-dialog p { margin: 0 0 18px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+    .switch {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-2);
+      transition: background 160ms ease, border-color 160ms ease;
+      flex: none;
+    }
+    .switch::after { content: ""; position: absolute; width: 14px; height: 14px; top: 2px; left: 2px; border-radius: 50%; background: var(--muted); transition: transform 160ms ease, background 160ms ease; }
+    .switch.on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 36%, var(--border)); }
+    .switch.on::after { transform: translateX(14px); background: var(--accent); }
+    .hidden-input { display: none !important; }
+    .form-sheet .sheet-section { padding: 0; border: 0; }
+    @media (max-width: 620px) {
+      .form-sheet, .settings-sheet { width: 100vw; }
+      .field-grid { grid-template-columns: 1fr; }
+      .import-summary { grid-template-columns: 1fr; }
+    }
+
+    /* Tweaks */
+    .tweaks { position: fixed; right: 17px; bottom: 17px; z-index: 80; font-family: var(--font-ui); }
+    .tweaks-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 86%, transparent);
+      color: var(--muted);
+      box-shadow: var(--shadow-soft);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      backdrop-filter: blur(16px);
+    }
+    .tweaks-toggle:hover { color: var(--text); border-color: var(--border-strong); }
+    .tweaks-panel {
+      position: absolute;
+      right: 0;
+      bottom: 42px;
+      width: 292px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(26px);
+    }
+    .tweaks-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+    .tweak-group { margin-top: 12px; }
+    .tweak-label { margin-bottom: 6px; color: var(--faint); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tweak-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tweak-note { margin: 13px 0 0; padding-top: 10px; border-top: 1px solid var(--border); color: var(--faint); font-size: 9.5px; line-height: 1.5; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      z-index: 100;
+      transform: translate(-50%, 14px);
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: 11px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--muted) 25%, transparent); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--muted) 45%, transparent); }
+
+    @media (max-width: 1200px) {
+      .app-shell { grid-template-columns: 230px minmax(0, 1fr); }
+      .detail-panel { display: none; }
+    }
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .login-shell { grid-template-columns: 1fr; min-height: auto; }
+      .brand-panel { min-height: 50vh; border-right: 0; border-bottom: 1px solid var(--border); }
+      .brand-copy { margin-top: 36px; }
+      .vault-visual { width: min(310px, 60%); margin-top: 24px; }
+      .brand-footer { margin-top: 30px; }
+      .auth-panel { min-height: 50vh; }
+      .app-shell { height: auto; min-height: 100vh; grid-template-columns: 72px minmax(0, 1fr); }
+      .sidebar { padding: 18px 10px; overflow: visible; }
+      .sidebar-brand .brand-word, .account-switcher .meta, .account-switcher .icon, .nav-item span:not(.icon), .nav-count, .vault-status, .sidebar-bottom .palette-label, .sidebar-bottom .palette, .sidebar-bottom .btn span { display: none; }
+      .sidebar-brand, .account-switcher, .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+      .account-switcher { border: 0; background: transparent; }
+      .nav-item { padding: 10px; }
+      .workspace { height: auto; min-height: 100vh; }
+      .topbar { padding: 14px 16px 0; flex-wrap: wrap; }
+      .search-box { max-width: none; width: 100%; }
+      .top-actions { margin-left: 0; width: 100%; }
+      .top-actions .btn { flex: 1; }
+      .workspace-inner { padding: 20px 16px 30px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body data-bg="gradient">
+  <div class="app-bg" aria-hidden="true"></div>
+
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/><path d="M12 16v2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M5 16v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.8-4.8"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.5V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 0 0 8 15a1.7 1.7 0 0 0-1.6-1H6v-2.5h.4A1.7 1.7 0 0 0 8 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.2h2.5V5a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1A1.7 1.7 0 0 0 18 10a1.7 1.7 0 0 0 1.6 1h.4v2.5h-.4a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13"/><path d="M10 11v5m4-5v5"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="m3 3 18 18M10.6 6.2A10.9 10.9 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-2.3 3M6.2 6.4C3.8 8.2 2.5 12 2.5 12s3.5 6 9.5 6c1.1 0 2.1-.2 3-.5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="3.5"/><path d="m10.5 12.5 8-8m-2 2 2 2m-5 1 2 2"/></symbol>
+    <symbol id="i-fingerprint" viewBox="0 0 24 24"><path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 3.2-.6 6-1.8 8.4M9 20.4A13 13 0 0 0 10.5 13a1.5 1.5 0 0 1 3 0c0 2.4-.4 4.7-1.1 6.8M3.2 14.5A12 12 0 0 0 4 8a8 8 0 0 1 14.3-2.7M14.9 18.9c.5-2 .8-4.1.8-5.9"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.3 3.4 5.2 3.4 8.5s-1.1 6.2-3.4 8.5c-2.3-2.3-3.4-5.2-3.4-8.5S9.7 5.8 12 3.5Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.3A8.5 8.5 0 0 1 8.7 4 8.5 8.5 0 1 0 20 15.3Z"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5m-14 7v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7"/></symbol>
+  </svg>
+
+  <!-- LOGIN -->
+  <main id="login-screen" class="login-shell">
+    <section class="brand-panel">
+      <header class="brand-top">
+        <div class="brand-mark"><svg class="icon icon-lg"><use href="#i-lock"/></svg></div>
+        <div class="brand-word">PWDog</div>
+        <span class="brand-badge">LOCAL VAULT</span>
+      </header>
+
+      <div class="brand-copy">
+        <p class="eyebrow">LOCAL / ENCRYPTED</p>
+        <p>一个安静、克制的本地密码库。多个独立账户、加密存储、浏览器自动填充，数据不离开这台机器。</p>
+        <div class="brand-chips">
+          <span class="chip"><span class="dot"></span> AES-256 加密</span>
+          <span class="chip">多账户隔离</span>
+          <span class="chip">Windows Hello</span>
+        </div>
+      </div>
+
+      <div class="vault-visual" aria-hidden="true">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="vault-core"><svg class="icon"><use href="#i-lock"/></svg></div>
+        <span class="float-tag float-a">AES-256</span>
+        <span class="float-tag float-b">Windows Hello</span>
+        <span class="float-tag float-c">ONSITE ONLY</span>
+      </div>
+
+      <footer class="brand-footer">
+        <div class="security-line"><span class="dot"></span>数据不会离开本机</div>
+        <div>
+          <div class="palette-label">THEME</div>
+          <div class="palette" data-palette></div>
+        </div>
+      </footer>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-inner">
+        <div class="auth-head">
+          <div>
+            <p class="eyebrow">WELCOME BACK</p>
+            <h2>选择账户</h2>
+            <p class="muted">每个账户有独立的主密码和独立加密库。</p>
+          </div>
+          <button class="icon-btn" type="button" data-open-settings aria-label="外观设置">
+            <svg class="icon"><use href="#i-settings"/></svg>
+          </button>
+        </div>
+
+        <div id="login-accounts" class="account-list"></div>
+
+        <form id="login-form" class="auth-form" autocomplete="off">
+          <label id="password-label" for="master-password">phc 的主密码</label>
+          <div class="password-wrap">
+            <svg class="icon icon-sm"><use href="#i-key"/></svg>
+            <input id="master-password" type="password" placeholder="输入主密码" autocomplete="current-password">
+            <button class="icon-btn" id="login-reveal" type="button" aria-label="显示密码">
+              <svg class="icon icon-sm"><use href="#i-eye"/></svg>
+            </button>
+          </div>
+          <p class="hint">按 Enter 直接解锁</p>
+
+          <button class="btn btn-primary btn-block" type="submit">
+            解锁密码库
+            <svg class="icon icon-sm"><use href="#i-arrow"/></svg>
+          </button>
+          <button class="btn btn-secondary btn-block" id="hello-unlock" type="button">
+            <svg class="icon icon-sm"><use href="#i-fingerprint"/></svg>
+            使用 Windows Hello 解锁
+          </button>
+
+          <div class="auth-links">
+            <button class="link" type="button" data-open-account="recover">使用恢复密钥</button>
+            <button class="link" type="button" data-open-account="create">创建本地账户</button>
+          </div>
+        </form>
+
+        <p class="micro-note">
+          <svg class="icon icon-sm"><use href="#i-shield"/></svg>
+          密码库已在本机加密，不会上传。
+        </p>
+        <p class="demo-note">演示模式 · 按 Enter 进入密码库</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- VAULT -->
+  <main id="vault-screen" class="app-shell" hidden>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark"><svg class="icon"><use href="#i-lock"/></svg></div>
+        <div class="brand-word">PWDog</div>
+      </div>
+
+      <button class="account-switcher" type="button" data-toast="账户切换将在下一步实现">
+        <span class="avatar theme-avatar" id="sidebar-avatar">P</span>
+        <span class="meta"><strong id="sidebar-account-name">phc</strong><small id="sidebar-account-label">本地账户</small></span>
+        <svg class="icon icon-sm"><use href="#i-chevron"/></svg>
+      </button>
+
+      <nav class="nav" aria-label="主菜单">
+        <button class="nav-item active" type="button">
+          <svg class="icon"><use href="#i-grid"/></svg>
+          <span>全部密码</span>
+          <span class="nav-count" id="nav-count">7</span>
+        </button>
+        <button class="nav-item" type="button" data-open-settings data-section="security">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <span>安全中心</span>
+        </button>
+        <button class="nav-item" type="button" data-open-settings>
+          <svg class="icon"><use href="#i-settings"/></svg>
+          <span>设置</span>
+        </button>
+      </nav>
+
+      <div class="vault-status">
+        <div class="status-top"><span class="status-dot"></span>已解锁</div>
+        <p>本地加密 · 自动填充已连接</p>
+        <div class="status-line">
+          <svg class="icon"><use href="#i-fingerprint"/></svg>
+          Windows Hello 已启用
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div>
+          <div class="palette-label">THEME</div>
+          <div class="palette" data-palette></div>
+        </div>
+        <button class="btn btn-quiet btn-block" id="lock-button" type="button">
+          <svg class="icon icon-sm"><use href="#i-lock"/></svg>
+          <span>锁定密码库</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div class="search-box">
+          <svg class="icon icon-sm"><use href="#i-search"/></svg>
+          <input id="search" type="search" placeholder="搜索标题、网址或用户名">
+          <kbd>Ctrl K</kbd>
+        </div>
+        <div class="top-actions">
+          <button class="btn btn-secondary" id="import-button" type="button">
+            <svg class="icon icon-sm"><use href="#i-upload"/></svg>
+            导入
+          </button>
+          <button class="btn btn-primary" id="new-entry-button" type="button">
+            <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+            新增密码
+          </button>
+        </div>
+      </header>
+
+      <div class="workspace-inner">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">YOUR VAULT</p>
+            <h1>全部密码</h1>
+            <p class="muted"><span id="site-count">4</span> 个网站 · <span id="entry-count">7</span> 个账户</p>
+          </div>
+          <div class="view-meta" id="view-meta">本地 · 刚刚同步</div>
+        </div>
+
+        <div id="site-groups" class="site-groups"></div>
+        <div id="empty-vault" class="empty-vault" hidden>
+          <div class="empty-mark"><svg class="icon icon-lg"><use href="#i-lock"/></svg></div>
+          <h2>密码库还是空的</h2>
+          <p>从第一条登录信息开始，或者导入浏览器的密码 CSV。</p>
+          <div class="empty-actions">
+            <button class="btn btn-primary" type="button" data-action="new-entry">
+              <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+              新增密码
+            </button>
+            <button class="btn btn-secondary" type="button" data-import-file>导入 CSV</button>
+          </div>
+        </div>
+        <div id="empty-search" class="empty-search" hidden>
+          <svg class="icon"><use href="#i-search"/></svg>
+          <p>没有匹配的密码条目</p>
+        </div>
+      </div>
+    </section>
+
+    <aside id="detail-panel" class="detail-panel"></aside>
+  </main>
+
+  <input id="avatar-input" class="hidden-input" type="file" accept="image/png,image/jpeg,image/gif,image/bmp">
+  <input id="import-input" class="hidden-input" type="file" accept=".csv,.txt,text/csv">
+
+  <!-- ENTRY EDITOR -->
+  <div id="entry-backdrop" class="sheet-backdrop"></div>
+  <aside id="entry-sheet" class="form-sheet" aria-label="编辑密码条目">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow">PASSWORD ENTRY</p>
+        <h2 id="entry-sheet-title">新增密码</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close-entry aria-label="关闭编辑器">
+        <svg class="icon"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <form id="entry-form" class="entry-form" autocomplete="off">
+      <label class="field">
+        <span>标题</span>
+        <input id="entry-title" type="text" placeholder="例如 GitHub · Work">
+      </label>
+      <label class="field">
+        <span>网址</span>
+        <input id="entry-url" type="text" placeholder="https://example.com">
+      </label>
+      <label class="field">
+        <span>用户名 / 邮箱</span>
+        <input id="entry-username" type="text" placeholder="name@example.com">
+      </label>
+      <div class="field">
+        <span>密码</span>
+        <div class="password-wrap">
+          <svg class="icon icon-sm"><use href="#i-key"/></svg>
+          <input id="entry-password" type="password" placeholder="输入密码">
+          <button class="icon-btn" id="entry-reveal" type="button" aria-label="显示密码">
+            <svg class="icon icon-sm"><use href="#i-eye"/></svg>
+          </button>
+          <button class="icon-btn" id="entry-copy" type="button" aria-label="复制密码">
+            <svg class="icon icon-sm"><use href="#i-copy"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-actions-row">
+        <button class="btn btn-secondary" id="generate-password" type="button" style="min-height:34px;font-size:11px">
+          <svg class="icon icon-sm"><use href="#i-key"/></svg>
+          生成强密码
+        </button>
+        <span class="form-hint">默认 20 位，包含大小写、数字和符号</span>
+      </div>
+      <label class="field">
+        <span>备注</span>
+        <textarea id="entry-notes" placeholder="可选，例如两步验证、安全提示"></textarea>
+      </label>
+      <p id="entry-error" class="form-error" hidden></p>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">保存条目</button>
+        <button class="btn btn-quiet" type="button" data-close-entry>取消</button>
+        <button class="link danger-text" id="entry-delete" type="button" hidden style="margin-left:auto">删除条目</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- IMPORT -->
+  <div id="import-backdrop" class="sheet-backdrop"></div>
+  <aside id="import-sheet" class="form-sheet" aria-label="导入浏览器密码">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow" id="import-format">BROWSER CSV</p>
+        <h2>导入密码</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close-import aria-label="关闭导入">
+        <svg class="icon"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <div class="notice">
+      <strong>明文提醒</strong>：浏览器导出的 CSV 是明文文件。导入完成后请删除原文件。此设计原型只在内存中处理，刷新页面即清空。
+    </div>
+    <div id="import-summary" class="import-summary" style="margin-top:14px"></div>
+    <div id="import-list" class="import-list"></div>
+    <p id="import-empty" class="form-hint" hidden style="margin-top:12px">没有找到可导入的登录条目。</p>
+    <div class="form-actions">
+      <button id="import-confirm" class="btn btn-primary" type="button">导入</button>
+      <button class="btn btn-quiet" type="button" data-close-import>取消</button>
+    </div>
+  </aside>
+
+  <!-- ACCOUNT CREATE / RECOVER -->
+  <div id="account-backdrop" class="sheet-backdrop"></div>
+  <aside id="account-sheet" class="form-sheet" aria-label="账户操作">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow" id="account-eyebrow">NEW LOCAL ACCOUNT</p>
+        <h2 id="account-title">创建本地账户</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close-account aria-label="关闭">
+        <svg class="icon"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <form id="account-form" class="account-form" autocomplete="off">
+      <div id="create-fields" style="display:flex;flex-direction:column;gap:14px">
+        <label class="field"><span>账户名称</span><input id="create-name" type="text" placeholder="例如 工作账户"></label>
+        <label class="field"><span>主密码（至少 8 位）</span><input id="create-password" type="password" placeholder="输入主密码"></label>
+        <label class="field"><span>确认主密码</span><input id="create-confirm" type="password" placeholder="再次输入主密码"></label>
+        <div class="notice">创建后会显示一次恢复密钥。它可以在忘记主密码时重置密码。</div>
+      </div>
+      <div id="recover-fields" style="display:none;flex-direction:column;gap:14px">
+        <label class="field"><span>恢复密钥</span><input id="recover-key" type="text" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+        <label class="field"><span>新主密码（至少 8 位）</span><input id="recover-password" type="password" placeholder="输入新主密码"></label>
+        <label class="field"><span>确认新主密码</span><input id="recover-confirm" type="password" placeholder="再次输入新主密码"></label>
+        <div class="notice">重置后旧主密码立即失效。恢复密钥仍会保留。</div>
+      </div>
+      <p id="account-error" class="form-error" hidden></p>
+      <div class="form-actions">
+        <button id="account-submit" class="btn btn-primary" type="submit">创建并解锁</button>
+        <button class="btn btn-quiet" type="button" data-close-account>取消</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- RECOVERY KEY REVEAL -->
+  <div id="recovery-backdrop" class="sheet-backdrop"></div>
+  <aside id="recovery-sheet" class="form-sheet" aria-label="保存恢复密钥">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow">ONE-TIME RECOVERY KEY</p>
+        <h2>保存恢复密钥</h2>
+      </div>
+    </div>
+    <p class="form-hint" style="font-size:11.5px;line-height:1.7">这串密钥只显示一次。忘记主密码时，用它重置密码。请离线保存，不要只放在被加密的密码库里。</p>
+    <div class="recovery-key" style="margin-top:16px">
+      <code id="recovery-key-value"></code>
+      <button class="icon-btn" type="button" id="copy-recovery-key" aria-label="复制恢复密钥">
+        <svg class="icon icon-sm"><use href="#i-copy"/></svg>
+      </button>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:16px;color:var(--muted);font-size:11px">
+      <input id="recovery-saved" type="checkbox">
+      我已将恢复密钥保存到安全位置
+    </label>
+    <div class="form-actions">
+      <button id="recovery-continue" class="btn btn-primary" type="button" disabled>进入密码库</button>
+    </div>
+  </aside>
+
+  <!-- CHANGE MASTER PASSWORD -->
+  <div id="password-backdrop" class="sheet-backdrop"></div>
+  <aside id="password-sheet" class="form-sheet" aria-label="修改主密码">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow">MASTER PASSWORD</p>
+        <h2>修改主密码</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close-password aria-label="关闭">
+        <svg class="icon"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <form id="password-form" class="password-form" autocomplete="off">
+      <label class="field"><span>当前主密码</span><input id="change-current" type="password" placeholder="输入当前主密码"></label>
+      <label class="field"><span>新主密码（至少 8 位）</span><input id="change-new" type="password" placeholder="输入新主密码"></label>
+      <label class="field"><span>确认新主密码</span><input id="change-confirm" type="password" placeholder="再次输入新主密码"></label>
+      <div class="notice">恢复密钥和 Windows Hello 快速解锁保持有效。</div>
+      <p id="password-error" class="form-error" hidden></p>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">保存新主密码</button>
+        <button class="btn btn-quiet" type="button" data-close-password>取消</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- CONFIRM DIALOG -->
+  <div id="confirm-backdrop" class="dialog-backdrop">
+    <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">确认操作</h2>
+      <p id="confirm-message"></p>
+      <div class="form-actions">
+        <button class="btn btn-quiet" id="confirm-cancel" type="button">取消</button>
+        <button class="btn btn-danger" id="confirm-ok" type="button">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings-backdrop" class="sheet-backdrop"></div>
+  <aside id="settings-sheet" class="settings-sheet" aria-label="设置">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow">PREFERENCES</p>
+        <h2>设置</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close-settings aria-label="关闭设置">
+        <svg class="icon"><use href="#i-x"/></svg>
+      </button>
+    </div>
+
+    <section class="sheet-section">
+      <div class="section-title">账户资料 <span class="muted" style="font-size:10px;font-weight:500">仅解锁后编辑</span></div>
+      <div class="profile-row">
+        <span class="avatar theme-avatar" id="settings-avatar">P</span>
+        <div class="meta"><strong id="settings-account-name">phc</strong><small id="settings-account-label">主账户 · 最近使用 今天</small></div>
+        <div style="display:flex;gap:5px;align-items:center">
+          <button class="btn btn-secondary" id="change-avatar" type="button" style="min-height:32px;font-size:10px;padding:0 10px">更换头像</button>
+          <button class="btn btn-quiet" id="remove-avatar" type="button" style="min-height:32px;font-size:10px;padding:0 8px" hidden>移除</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet-section" id="settings-appearance">
+      <div class="section-title">外观</div>
+      <div class="theme-options" data-theme-options>
+        <button class="mode-btn" type="button" data-mode="system">跟随系统</button>
+        <button class="mode-btn" type="button" data-mode="light">浅色</button>
+        <button class="mode-btn" type="button" data-mode="dark">深色</button>
+      </div>
+      <div class="sheet-palette">
+        <div class="palette-label">ACCENT</div>
+        <div class="palette" data-palette></div>
+      </div>
+      <div class="sheet-palette">
+        <div class="palette-label">BACKGROUND</div>
+        <div class="theme-options" data-bg-options>
+          <button class="bg-btn" type="button" data-bgstyle="solid">纯色</button>
+          <button class="bg-btn" type="button" data-bgstyle="gradient">渐变</button>
+          <button class="bg-btn" type="button" data-bgstyle="glow">光晕</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet-section" id="settings-security">
+      <div class="section-title">安全</div>
+      <div class="settings-row">
+        <svg class="icon"><use href="#i-key"/></svg>
+        <div class="row-main"><strong>主密码</strong><small>已设置 · 修改需要当前主密码</small></div>
+        <button class="link" type="button" data-open-password>修改</button>
+      </div>
+      <div class="settings-row">
+        <svg class="icon"><use href="#i-fingerprint"/></svg>
+        <div class="row-main"><strong>Windows Hello</strong><small>快速解锁已启用</small></div>
+        <span class="row-value">已启用</span>
+      </div>
+      <div class="settings-row">
+        <svg class="icon"><use href="#i-lock"/></svg>
+        <div class="row-main"><strong>空闲锁定</strong><small>保持解锁，不自动锁定</small></div>
+        <span class="row-value">关闭</span>
+      </div>
+      <div class="settings-row">
+        <svg class="icon"><use href="#i-globe"/></svg>
+        <div class="row-main"><strong>浏览器自动填充</strong><small>本地扩展已配对</small></div>
+        <span class="row-value">已连接</span>
+      </div>
+    </section>
+
+    <section class="sheet-section">
+      <div class="section-title">本机数据</div>
+      <div class="settings-row">
+        <svg class="icon"><use href="#i-database"/></svg>
+        <div class="row-main"><strong>加密密码库</strong><small>%LOCALAPPDATA%\PWDogData</small></div>
+      </div>
+      <div class="data-path">C:\Users\phc\AppData\Local\PWDogData</div>
+      <button class="link danger-text" id="wipe-data" type="button" style="margin-top:12px">清除本机全部数据</button>
+    </section>
+  </aside>
+
+  <!-- TWEAKS -->
+  <div class="tweaks">
+    <div id="tweaks-panel" class="tweaks-panel" hidden>
+      <div class="tweaks-title">
+        <span>Tweaks</span>
+        <button class="icon-btn" id="tweaks-close" type="button" aria-label="关闭 Tweaks" style="width:24px;height:24px"><svg class="icon icon-sm"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Theme</div>
+        <div class="tweak-row" data-theme-options>
+          <button class="mode-btn" type="button" data-mode="system">System</button>
+          <button class="mode-btn" type="button" data-mode="light">Light</button>
+          <button class="mode-btn" type="button" data-mode="dark">Dark</button>
+        </div>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Accent</div>
+        <div class="palette" data-palette></div>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Background</div>
+        <div class="tweak-row" data-bg-options>
+          <button class="bg-btn" type="button" data-bgstyle="solid">Solid</button>
+          <button class="bg-btn" type="button" data-bgstyle="gradient">Gradient</button>
+          <button class="bg-btn" type="button" data-bgstyle="glow">Glow</button>
+        </div>
+      </div>
+      <div class="tweak-group">
+        <div class="tweak-label">Preview</div>
+        <div class="tweak-row">
+          <button class="bg-btn" type="button" data-preview="login">Login</button>
+          <button class="bg-btn" type="button" data-preview="vault">Vault</button>
+        </div>
+      </div>
+      <p class="tweak-note">演示数据。所有操作仅在本页内存中生效，刷新即重置。</p>
+    </div>
+    <button id="tweaks-toggle" class="tweaks-toggle" type="button">
+      <svg class="icon icon-sm"><use href="#i-settings"/></svg>
+      Tweaks
+    </button>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const ACCENTS = [
+      { id: "purple", name: "紫色", color: "#7b5aa6" },
+      { id: "blue", name: "蓝色", color: "#3b6eea" },
+      { id: "green", name: "绿色", color: "#3d8154" },
+      { id: "orange", name: "橙色", color: "#b2622a" },
+      { id: "red", name: "红色", color: "#b3443b" },
+    ];
+
+    const GITHUB = "github.com";
+    const groups = [
+      {
+        domain: "github.com",
+        accounts: [
+          { id: "gh-work", title: "GitHub · Work", username: "alice@company.com", password: "N7!vQ2#pL9@rT4x", url: "https://github.com", notes: "工作账号，已开启双因素认证。", updated: "今天 10:24" },
+          { id: "gh-personal", title: "GitHub · Personal", username: "alice@personal.me", password: "kR4@wT8!mQ2#zP6v", url: "https://github.com", notes: "个人项目。", updated: "昨天 21:08" },
+        ],
+      },
+      {
+        domain: "figma.com",
+        accounts: [
+          { id: "figma", title: "Figma · Design", username: "alice@company.com", password: "Fg7!sL2@pD9#xV4q", url: "https://figma.com", notes: "设计团队工作区。", updated: "今天 09:41" },
+        ],
+      },
+      {
+        domain: "proton.me",
+        accounts: [
+          { id: "proton", title: "Proton Mail", username: "alice@proton.me", password: "Pm3@rH6!nK8#tW2z", url: "https://mail.proton.me", notes: "私人邮箱，开启两步验证。", updated: "10 月 17 日" },
+        ],
+      },
+      {
+        domain: "linear.app",
+        accounts: [
+          { id: "linear", title: "Linear · Team", username: "alice@company.com", password: "Ln9#cV4@bM7!xQ2s", url: "https://linear.app", notes: "项目协作。", updated: "10 月 16 日" },
+        ],
+      },
+      {
+        domain: "cloudflare.com",
+        accounts: [
+          { id: "cloudflare", title: "Cloudflare", username: "ops@company.com", password: "Cf5!wN8@rT2#kL6p", url: "https://dash.cloudflare.com", notes: "只用于公司域名。", updated: "10 月 14 日" },
+          { id: "cf-legacy", title: "Cloudflare · 旧账号", username: "alice.old@company.com", password: "Cf2#qH7!mB4@zX9v", url: "https://dash.cloudflare.com", notes: "等待迁移后删除。", updated: "9 月 20 日" },
+        ],
+      },
+    ];
+
+    const accounts = [
+      { id: "phc", name: "phc", label: "主账户 · 最近使用 今天", initial: "P", className: "theme-avatar", avatarUrl: null },
+      { id: "work", name: "Work", label: "工作账户 · 最近使用 昨天", initial: "W", className: "work-avatar", avatarUrl: null },
+    ];
+
+    const state = {
+      screen: "login",
+      account: "phc",
+      accent: "purple",
+      themeMode: "dark",
+      bg: "gradient",
+      selectedEntry: "gh-work",
+      revealed: false,
+      query: "",
+      editor: null,
+      importPreview: null,
+      accountMode: "create",
+      recoveryAccountId: null,
+      pendingDelete: null,
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const loginScreen = $("#login-screen");
+    const vaultScreen = $("#vault-screen");
+    const settingsSheet = $("#settings-sheet");
+    const settingsBackdrop = $("#settings-backdrop");
+    const entrySheet = $("#entry-sheet");
+    const entryBackdrop = $("#entry-backdrop");
+    const importSheet = $("#import-sheet");
+    const importBackdrop = $("#import-backdrop");
+    const accountSheet = $("#account-sheet");
+    const accountBackdrop = $("#account-backdrop");
+    const recoverySheet = $("#recovery-sheet");
+    const recoveryBackdrop = $("#recovery-backdrop");
+    const passwordSheet = $("#password-sheet");
+    const passwordBackdrop = $("#password-backdrop");
+    const confirmBackdrop = $("#confirm-backdrop");
+    const tweaksPanel = $("#tweaks-panel");
+    let toastTimer;
+
+    function toast(message) {
+      const element = $("#toast");
+      element.textContent = message;
+      element.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => element.classList.remove("show"), 2200);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[character]));
+    }
+
+    function allEntries() {
+      return groups.flatMap((group) => group.accounts.map((entry) => ({ ...entry, domain: group.domain })));
+    }
+
+    function effectiveTheme() {
+      if (state.themeMode === "system") {
+        return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      return state.themeMode;
+    }
+
+    function applyTheme() {
+      document.documentElement.dataset.theme = effectiveTheme();
+      document.documentElement.dataset.accent = state.accent;
+      document.body.dataset.bg = state.bg;
+      syncControlStates();
+    }
+
+    function syncControlStates() {
+      $$("[data-mode]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === state.themeMode);
+      });
+      $$("[data-bgstyle]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.bgstyle === state.bg);
+      });
+      $$("[data-accent]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.accent === state.accent);
+      });
+    }
+
+    function buildPalettes() {
+      $$("[data-palette]").forEach((palette) => {
+        palette.innerHTML = ACCENTS.map((accent) =>
+          `<button class="swatch" type="button" data-accent="${accent.id}" title="${accent.name}" aria-label="${accent.name}" style="background:${accent.color}"></button>`
+        ).join("");
+      });
+    }
+
+    function activeAccount() {
+      return accounts.find((account) => account.id === state.account) || accounts[0];
+    }
+
+    function avatarMarkup(account) {
+      const classes = ["avatar", account.className, account.avatarUrl ? "with-image" : ""].filter(Boolean).join(" ");
+      return `<span class="${classes}">${account.avatarUrl ? `<img src="${escapeHtml(account.avatarUrl)}" alt="">` : escapeHtml(account.initial)}</span>`;
+    }
+
+    function renderAccounts() {
+      $("#login-accounts").innerHTML = accounts.map((account) => `
+        <button class="account-card ${state.account === account.id ? "selected" : ""}" type="button" data-account="${escapeHtml(account.id)}">
+          ${avatarMarkup(account)}
+          <span class="account-meta"><strong>${escapeHtml(account.name)}</strong><small>${escapeHtml(account.label)}</small></span>
+          <span class="account-check"><svg class="icon icon-sm"><use href="#i-check"/></svg></span>
+        </button>
+      `).join("");
+
+      const active = activeAccount();
+      $("#password-label").textContent = `${active.name} 的主密码`;
+      $("#sidebar-account-name").textContent = active.name;
+      $("#sidebar-account-label").textContent = active.label;
+      $("#settings-account-name").textContent = active.name;
+      $("#settings-account-label").textContent = active.label;
+
+      ["sidebar-avatar", "settings-avatar"].forEach((id) => {
+        const element = document.getElementById(id);
+        if (!element) return;
+        element.className = `avatar ${active.className} ${active.avatarUrl ? "with-image" : ""}`.trim();
+        element.innerHTML = active.avatarUrl ? `<img src="${escapeHtml(active.avatarUrl)}" alt="">` : escapeHtml(active.initial);
+      });
+      $("#remove-avatar").hidden = !active.avatarUrl;
+    }
+
+    function filteredGroups() {
+      const query = state.query.trim().toLowerCase();
+      if (!query) return groups;
+      return groups
+        .map((group) => ({
+          ...group,
+          accounts: group.accounts.filter((entry) =>
+            [entry.title, entry.username, group.domain].some((value) => value.toLowerCase().includes(query))
+          ),
+        }))
+        .filter((group) => group.accounts.length > 0);
+    }
+
+    function renderGroups() {
+      const allVisible = groups.filter((group) => group.accounts.length > 0);
+      const visibleGroups = filteredGroups();
+      const visibleEntries = visibleGroups.flatMap((group) => group.accounts);
+      const hasAnyEntries = allVisible.length > 0;
+
+      $("#site-count").textContent = visibleGroups.length;
+      $("#entry-count").textContent = visibleEntries.length;
+      $("#nav-count").textContent = allVisible.reduce((total, group) => total + group.accounts.length, 0);
+      $("#empty-vault").hidden = hasAnyEntries;
+      $("#empty-search").hidden = !hasAnyEntries || visibleEntries.length !== 0;
+      $("#site-groups").hidden = visibleEntries.length === 0;
+
+      if (!visibleEntries.length) {
+        state.selectedEntry = null;
+      } else if (!visibleEntries.some((entry) => entry.id === state.selectedEntry)) {
+        state.selectedEntry = visibleEntries[0].id;
+      }
+
+      $("#site-groups").innerHTML = visibleGroups.map((group, groupIndex) => {
+        const letter = group.domain.charAt(0).toUpperCase();
+        const rows = group.accounts.map((entry) => `
+          <div class="entry-row ${state.selectedEntry === entry.id ? "selected" : ""}" data-entry-id="${escapeHtml(entry.id)}" tabindex="0" role="button">
+            <div class="entry-main">
+              <div class="entry-title">${escapeHtml(entry.title)}</div>
+              <div class="entry-user">${escapeHtml(entry.username)}</div>
+            </div>
+            <div class="entry-actions">
+              <button class="icon-btn" type="button" data-action="copy" data-entry-id="${escapeHtml(entry.id)}" aria-label="复制密码" title="复制密码"><svg class="icon"><use href="#i-copy"/></svg></button>
+              <button class="icon-btn" type="button" data-action="edit" data-entry-id="${escapeHtml(entry.id)}" aria-label="编辑" title="编辑"><svg class="icon"><use href="#i-edit"/></svg></button>
+              <button class="icon-btn danger" type="button" data-action="delete" data-entry-id="${escapeHtml(entry.id)}" aria-label="删除" title="删除"><svg class="icon"><use href="#i-trash"/></svg></button>
+            </div>
+          </div>
+        `).join("");
+        return `
+          <section class="site-card" style="animation-delay:${groupIndex * 30}ms">
+            <header class="site-head">
+              <span class="site-letter">${escapeHtml(letter)}</span>
+              <span class="site-domain">${escapeHtml(group.domain)}</span>
+              <span class="site-count">${group.accounts.length} 个账户</span>
+              <button class="site-add" type="button" data-action="new-entry" data-domain="${escapeHtml(group.domain)}">新增账户</button>
+            </header>
+            ${rows}
+          </section>
+        `;
+      }).join("");
+
+      renderDetail();
+    }
+
+    function findEntry(id) {
+      return allEntries().find((entry) => entry.id === id);
+    }
+
+    function renderDetail() {
+      const entry = findEntry(state.selectedEntry);
+      const panel = $("#detail-panel");
+      if (!entry) {
+        panel.innerHTML = `
+          <div class="empty-detail">
+            <svg class="icon"><use href="#i-key"/></svg>
+            <h2>选择一个条目</h2>
+            <p>密码详情和安全操作会显示在这里。</p>
+          </div>
+        `;
+        return;
+      }
+      const secret = state.revealed ? entry.password : "••••••••••••";
+      panel.innerHTML = `
+        <div class="detail-head">
+          <div class="detail-monogram">${escapeHtml(entry.domain.charAt(0).toUpperCase())}</div>
+          <div>
+            <div class="detail-kicker">${escapeHtml(entry.domain)}</div>
+            <h2>${escapeHtml(entry.title)}</h2>
+            <p>${escapeHtml(entry.updated)}</p>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">用户名</div>
+          <div class="detail-value-row">
+            <span class="detail-value">${escapeHtml(entry.username)}</span>
+            <button class="icon-btn" type="button" data-action="copy-user" aria-label="复制用户名" title="复制用户名"><svg class="icon icon-sm"><use href="#i-copy"/></svg></button>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">密码</div>
+          <div class="secret-box">
+            <span class="secret-value ${state.revealed ? "" : "masked"}">${escapeHtml(secret)}</span>
+            <button class="icon-btn" type="button" data-action="reveal" aria-label="${state.revealed ? "隐藏密码" : "显示密码"}" title="${state.revealed ? "隐藏密码" : "显示密码"}">
+              <svg class="icon icon-sm"><use href="#${state.revealed ? "i-eye-off" : "i-eye"}"/></svg>
+            </button>
+            <button class="icon-btn" type="button" data-action="copy" data-entry-id="${entry.id}" aria-label="复制密码" title="复制密码"><svg class="icon icon-sm"><use href="#i-copy"/></svg></button>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">网址</div>
+          <div class="detail-value-row">
+            <svg class="icon icon-sm" style="color:var(--muted)"><use href="#i-globe"/></svg>
+            <span class="detail-value">${escapeHtml(entry.url)}</span>
+            <button class="icon-btn" type="button" data-toast="已在浏览器中打开演示链接" aria-label="打开网址" title="打开网址"><svg class="icon icon-sm"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <button class="btn btn-primary" type="button" data-action="edit" data-entry-id="${entry.id}">编辑条目</button>
+          <button class="btn btn-secondary" type="button" data-action="copy" data-entry-id="${entry.id}">复制密码</button>
+        </div>
+
+        <div class="detail-note">${escapeHtml(entry.notes || "暂无备注。")}</div>
+
+        <div class="detail-meta">
+          <div><span>最近更新</span><span>${escapeHtml(entry.updated)}</span></div>
+          <div><span>自动填充</span><span>${escapeHtml(entry.domain)}</span></div>
+          <div><span>存储位置</span><span>本机加密库</span></div>
+        </div>
+      `;
+    }
+
+    function setScreen(screen) {
+      state.screen = screen;
+      loginScreen.hidden = screen !== "login";
+      vaultScreen.hidden = screen !== "vault";
+      if (screen === "vault") {
+        renderGroups();
+        setTimeout(() => $("#search").focus(), 80);
+      }
+    }
+
+    function openSettings(section) {
+      settingsSheet.classList.add("open");
+      settingsBackdrop.classList.add("open");
+      if (section === "security") {
+        setTimeout(() => {
+          const target = $("#settings-security");
+          if (target) {
+            settingsSheet.scrollTo({ top: target.offsetTop - 24, behavior: "smooth" });
+          }
+        }, 120);
+      }
+    }
+
+    function closeSettings() {
+      settingsSheet.classList.remove("open");
+      settingsBackdrop.classList.remove("open");
+    }
+
+    function selectEntry(id) {
+      state.selectedEntry = id;
+      state.revealed = false;
+      renderGroups();
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).catch(() => {});
+      }
+      toast("已复制，演示中 15 秒后清除");
+    }
+
+    function openSheet(sheet, backdrop) {
+      sheet.classList.add("open");
+      backdrop.classList.add("open");
+    }
+
+    function closeSheet(sheet, backdrop) {
+      sheet.classList.remove("open");
+      backdrop.classList.remove("open");
+    }
+
+    function urlHost(url) {
+      const trimmed = url.trim();
+      if (!trimmed) return "";
+      try {
+        return new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`)
+          .hostname
+          .toLowerCase();
+      } catch {
+        return "";
+      }
+    }
+
+    function findEntryRef(id) {
+      for (const group of groups) {
+        const index = group.accounts.findIndex((entry) => entry.id === id);
+        if (index >= 0) return { group, entry: group.accounts[index], index };
+      }
+      return null;
+    }
+
+    function openEntryEditor(mode, id = null, domain = "") {
+      const entry = id ? findEntry(id) : null;
+      state.editor = { mode, id, domain };
+      $("#entry-sheet-title").textContent = mode === "edit" ? "编辑密码" : "新增密码";
+      $("#entry-title").value = entry?.title || "";
+      $("#entry-url").value = entry?.url || (domain ? `https://${domain}` : "");
+      $("#entry-username").value = entry?.username || "";
+      $("#entry-password").value = entry?.password || "";
+      $("#entry-password").type = "password";
+      $("#entry-notes").value = entry?.notes || "";
+      $("#entry-delete").hidden = mode !== "edit";
+      $("#entry-error").hidden = true;
+      openSheet(entrySheet, entryBackdrop);
+      setTimeout(() => $("#entry-title").focus(), 120);
+    }
+
+    function closeEntryEditor() {
+      closeSheet(entrySheet, entryBackdrop);
+      state.editor = null;
+    }
+
+    function generatePassword(length = 20) {
+      const sets = [
+        "abcdefghijkmnopqrstuvwxyz",
+        "ABCDEFGHJKLMNPQRSTUVWXYZ",
+        "23456789",
+        "!@#$%^&*()-_=+[]{};:,.?",
+      ];
+      const random = (max) => {
+        const buffer = new Uint32Array(1);
+        crypto.getRandomValues(buffer);
+        return buffer[0] % max;
+      };
+      const result = sets.map((set) => set[random(set.length)]);
+      const all = sets.join("");
+      while (result.length < length) result.push(all[random(all.length)]);
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = random(i + 1);
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result.join("");
+    }
+
+    function saveEntry(event) {
+      event.preventDefault();
+      const title = $("#entry-title").value.trim();
+      const url = $("#entry-url").value.trim();
+      const username = $("#entry-username").value;
+      const password = $("#entry-password").value;
+      const notes = $("#entry-notes").value.trim();
+      const error = $("#entry-error");
+      error.hidden = true;
+
+      if (!title) {
+        error.textContent = "标题不能为空。";
+        error.hidden = false;
+        $("#entry-title").focus();
+        return;
+      }
+      if (!password) {
+        error.textContent = "密码不能为空。";
+        error.hidden = false;
+        $("#entry-password").focus();
+        return;
+      }
+
+      const editor = state.editor;
+      if (editor.mode === "edit" && editor.id) {
+        const ref = findEntryRef(editor.id);
+        if (!ref) return;
+        const oldDomain = ref.group.domain;
+        Object.assign(ref.entry, { title, url, username, password, notes, updated: "刚刚" });
+        const newDomain = urlHost(url) || oldDomain;
+        if (newDomain !== oldDomain) {
+          ref.group.accounts.splice(ref.index, 1);
+          let target = groups.find((group) => group.domain === newDomain);
+          if (!target) {
+            target = { domain: newDomain, accounts: [] };
+            groups.unshift(target);
+          }
+          target.accounts.unshift(ref.entry);
+          if (!ref.group.accounts.length) groups.splice(groups.indexOf(ref.group), 1);
+        }
+        state.selectedEntry = editor.id;
+      } else {
+        const domain = urlHost(url) || editor.domain || "local";
+        const entry = {
+          id: `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          title,
+          url,
+          username,
+          password,
+          notes,
+          updated: "刚刚",
+        };
+        let group = groups.find((item) => item.domain === domain);
+        if (!group) {
+          group = { domain, accounts: [] };
+          groups.unshift(group);
+        }
+        group.accounts.unshift(entry);
+        state.selectedEntry = entry.id;
+      }
+
+      closeEntryEditor();
+      renderGroups();
+      toast(editor.mode === "edit" ? "密码条目已更新" : "密码条目已保存");
+    }
+
+    function removeEntry(id) {
+      const ref = findEntryRef(id);
+      if (!ref) return;
+      ref.group.accounts.splice(ref.index, 1);
+      if (!ref.group.accounts.length) groups.splice(groups.indexOf(ref.group), 1);
+      if (state.selectedEntry === id) {
+        state.selectedEntry = allEntries()[0]?.id || null;
+      }
+      state.revealed = false;
+      closeEntryEditor();
+      renderGroups();
+      toast("密码条目已删除");
+    }
+
+    function requestDeleteEntry(id) {
+      const entry = findEntry(id);
+      if (!entry) return;
+      askConfirm(
+        "删除密码条目",
+        `确定删除“${entry.title}”吗？此操作不可撤销。`,
+        "删除",
+        () => removeEntry(id),
+      );
+    }
+
+    function openAccountSheet(mode) {
+      state.accountMode = mode;
+      const create = mode === "create";
+      $("#account-eyebrow").textContent = create ? "NEW LOCAL ACCOUNT" : "RECOVERY KEY";
+      $("#account-title").textContent = create ? "创建本地账户" : "使用恢复密钥";
+      $("#account-submit").textContent = create ? "创建并解锁" : "重置密码并解锁";
+      $("#create-fields").style.display = create ? "flex" : "none";
+      $("#recover-fields").style.display = create ? "none" : "flex";
+      $("#account-error").hidden = true;
+      ["create-name", "create-password", "create-confirm", "recover-key", "recover-password", "recover-confirm"]
+        .forEach((id) => { $("#" + id).value = ""; });
+      openSheet(accountSheet, accountBackdrop);
+      setTimeout(() => $(create ? "#create-name" : "#recover-key").focus(), 120);
+    }
+
+    function closeAccountSheet() {
+      closeSheet(accountSheet, accountBackdrop);
+    }
+
+    function randomRecoveryKey() {
+      const bytes = new Uint8Array(32);
+      crypto.getRandomValues(bytes);
+      const hex = Array.from(bytes)
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("")
+        .toUpperCase();
+      return hex.match(/.{1,8}/g).join("-");
+    }
+
+    function openRecoverySheet(accountId) {
+      state.recoveryAccountId = accountId;
+      $("#recovery-key-value").textContent = randomRecoveryKey();
+      $("#recovery-saved").checked = false;
+      $("#recovery-continue").disabled = true;
+      openSheet(recoverySheet, recoveryBackdrop);
+    }
+
+    function submitAccountForm(event) {
+      event.preventDefault();
+      const error = $("#account-error");
+      error.hidden = true;
+      if (state.accountMode === "create") {
+        const name = $("#create-name").value.trim();
+        const password = $("#create-password").value;
+        const confirmation = $("#create-confirm").value;
+        if (!name) return showAccountError("请输入账户名称。");
+        if (password.length < 8) return showAccountError("主密码至少需要 8 个字符。");
+        if (password !== confirmation) return showAccountError("两次输入的主密码不一致。");
+
+        const account = {
+          id: `account-${Date.now()}`,
+          name,
+          label: "本地账户 · 刚刚创建",
+          initial: name.charAt(0).toUpperCase() || "P",
+          className: "theme-avatar",
+          avatarUrl: null,
+        };
+        accounts.push(account);
+        state.account = account.id;
+        renderAccounts();
+        closeAccountSheet();
+        openRecoverySheet(account.id);
+      } else {
+        const key = $("#recover-key").value.trim();
+        const password = $("#recover-password").value;
+        const confirmation = $("#recover-confirm").value;
+        if (!key) return showAccountError("请输入恢复密钥。");
+        if (password.length < 8) return showAccountError("新主密码至少需要 8 个字符。");
+        if (password !== confirmation) return showAccountError("两次输入的新主密码不一致。");
+        closeAccountSheet();
+        setScreen("vault");
+        toast("主密码已重置，恢复密钥仍然有效");
+      }
+    }
+
+    function showAccountError(message) {
+      const error = $("#account-error");
+      error.textContent = message;
+      error.hidden = false;
+    }
+
+    function openPasswordSheet() {
+      if (state.screen !== "vault") {
+        toast("解锁后可以修改主密码");
+        return;
+      }
+      ["change-current", "change-new", "change-confirm"].forEach((id) => { $("#" + id).value = ""; });
+      $("#password-error").hidden = true;
+      openSheet(passwordSheet, passwordBackdrop);
+      setTimeout(() => $("#change-current").focus(), 120);
+    }
+
+    function closePasswordSheet() {
+      closeSheet(passwordSheet, passwordBackdrop);
+    }
+
+    function submitPasswordChange(event) {
+      event.preventDefault();
+      const current = $("#change-current").value;
+      const next = $("#change-new").value;
+      const confirmation = $("#change-confirm").value;
+      const error = $("#password-error");
+      error.hidden = true;
+      if (!current) return showPasswordError("请输入当前主密码。");
+      if (next.length < 8) return showPasswordError("新主密码至少需要 8 个字符。");
+      if (next !== confirmation) return showPasswordError("两次输入的新密码不一致。");
+      closePasswordSheet();
+      toast("主密码已修改，恢复密钥和快速解锁仍然有效");
+    }
+
+    function showPasswordError(message) {
+      const error = $("#password-error");
+      error.textContent = message;
+      error.hidden = false;
+    }
+
+    function openImportSheet(preview) {
+      state.importPreview = preview;
+      const entries = preview.entries;
+      $("#import-format").textContent = `已识别 · ${preview.format}`;
+      $("#import-summary").innerHTML = `
+        <div class="import-stat"><strong>${entries.length}</strong><small>可导入</small></div>
+        <div class="import-stat"><strong>${preview.invalid}</strong><small>无效 / 非登录</small></div>
+        <div class="import-stat"><strong>${preview.duplicates}</strong><small>文件内 / 已有重复</small></div>
+      `;
+      $("#import-list").innerHTML = entries.slice(0, 7).map((entry) => {
+        const host = urlHost(entry.url) || entry.title;
+        return `
+          <div class="import-row">
+            <span class="site-letter">${escapeHtml(host.charAt(0).toUpperCase())}</span>
+            <div class="row-main">
+              <strong>${escapeHtml(entry.title)}</strong>
+              <small>${escapeHtml(entry.username || "无用户名")} · ${escapeHtml(entry.url || "无网址")}</small>
+            </div>
+          </div>
+        `;
+      }).join("");
+      $("#import-list").hidden = entries.length === 0;
+      $("#import-empty").hidden = entries.length !== 0;
+      $("#import-confirm").disabled = entries.length === 0;
+      $("#import-confirm").textContent = entries.length ? `导入 ${entries.length} 条` : "没有可导入条目";
+      openSheet(importSheet, importBackdrop);
+    }
+
+    function closeImportSheet() {
+      closeSheet(importSheet, importBackdrop);
+      state.importPreview = null;
+      $("#import-input").value = "";
+    }
+
+    function parseCsvRows(text) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let inQuotes = false;
+      let index = 0;
+      while (index < text.length) {
+        const char = text[index];
+        if (inQuotes) {
+          if (char === '"') {
+            if (text[index + 1] === '"') { field += '"'; index++; }
+            else inQuotes = false;
+          } else field += char;
+        } else if (char === '"' && field === "") {
+          inQuotes = true;
+        } else if (char === ",") {
+          row.push(field);
+          field = "";
+        } else if (char === "\n") {
+          row.push(field);
+          field = "";
+          rows.push(row);
+          row = [];
+        } else if (char !== "\r") {
+          field += char;
+        }
+        index++;
+      }
+      if (field || row.length) {
+        row.push(field);
+        rows.push(row);
+      }
+      return rows.filter((line) => line.some((cell) => cell.trim() !== ""));
+    }
+
+    function headerIndex(header, ...names) {
+      for (const name of names) {
+        const index = header.indexOf(name);
+        if (index >= 0) return index;
+      }
+      return null;
+    }
+
+    function cell(row, index) {
+      return index == null || index >= row.length ? "" : row[index];
+    }
+
+    function parseBrowserCsv(text) {
+      const rows = parseCsvRows(text.replace(/^﻿/, ""));
+      if (!rows.length) throw new Error("文件为空。");
+      const header = rows[0].map((value) => value.trim().toLowerCase().replace(/^﻿/, ""));
+      const passwordIndex = headerIndex(header, "password", "login_password");
+      if (passwordIndex == null) throw new Error("无法识别文件格式：缺少 password 列。");
+      const nameIndex = headerIndex(header, "name", "title");
+      const urlIndex = headerIndex(header, "url", "login_uri", "website", "login_url");
+      const usernameIndex = headerIndex(header, "username", "login_username", "user", "email");
+      const notesIndex = headerIndex(header, "note", "notes");
+      const typeIndex = headerIndex(header, "type");
+      const format = header.includes("login_uri") && header.includes("login_password")
+        ? "Bitwarden CSV"
+        : header.includes("httprealm") || header.includes("formactionorigin")
+          ? "Firefox CSV"
+          : header.includes("name") && header.includes("url") && header.includes("username")
+            ? "Chrome / Edge CSV"
+            : "通用 CSV";
+
+      const existing = new Set(allEntries().map((entry) => [entry.url.trim().toLowerCase(), entry.username, entry.password].join("\u001f")));
+      const seen = new Set();
+      const entries = [];
+      let invalid = 0;
+      let duplicates = 0;
+
+      for (const row of rows.slice(1)) {
+        const type = cell(row, typeIndex).trim().toLowerCase();
+        if (typeIndex != null && type && type !== "login") { invalid++; continue; }
+        const url = cell(row, urlIndex).split(/\r?\n/)[0].trim();
+        const username = cell(row, usernameIndex);
+        const password = cell(row, passwordIndex);
+        const notes = cell(row, notesIndex);
+        const rawTitle = cell(row, nameIndex).trim();
+        const title = rawTitle || urlHost(url) || "Imported";
+        if (!password) { invalid++; continue; }
+        const key = [url.toLowerCase(), username, password].join("\u001f");
+        if (seen.has(key) || existing.has(key)) { duplicates++; continue; }
+        seen.add(key);
+        entries.push({ id: `import-${Date.now()}-${entries.length}`, title, url, username, password, notes, updated: "刚刚" });
+      }
+
+      return { format, entries, invalid, duplicates };
+    }
+
+    function confirmImport() {
+      const preview = state.importPreview;
+      if (!preview || !preview.entries.length) return;
+      const firstId = preview.entries[0].id;
+      for (const entry of preview.entries) {
+        const domain = urlHost(entry.url) || "imported";
+        let group = groups.find((item) => item.domain === domain);
+        if (!group) {
+          group = { domain, accounts: [] };
+          groups.unshift(group);
+        }
+        group.accounts.unshift(entry);
+      }
+      state.selectedEntry = firstId;
+      state.query = "";
+      $("#search").value = "";
+      closeImportSheet();
+      renderGroups();
+      toast(`已导入 ${preview.entries.length} 条，跳过 ${preview.invalid + preview.duplicates} 条`);
+    }
+
+    let pendingConfirm = null;
+
+    function askConfirm(title, message, label, action) {
+      $("#confirm-title").textContent = title;
+      $("#confirm-message").textContent = message;
+      $("#confirm-ok").textContent = label;
+      pendingConfirm = action;
+      confirmBackdrop.classList.add("open");
+    }
+
+    function closeConfirm() {
+      confirmBackdrop.classList.remove("open");
+      pendingConfirm = null;
+    }
+
+    function handleAction(action, id, domain) {
+      const entry = id ? findEntry(id) : findEntry(state.selectedEntry);
+      if (action === "copy" && entry) copyText(entry.password);
+      if (action === "copy-user" && entry) copyText(entry.username);
+      if (action === "reveal") {
+        state.revealed = !state.revealed;
+        renderDetail();
+      }
+      if (action === "edit" && entry) openEntryEditor("edit", entry.id);
+      if (action === "new-entry") openEntryEditor("new", null, domain);
+      if (action === "delete" && entry) requestDeleteEntry(entry.id);
+    }
+
+    // Initial render
+    buildPalettes();
+    renderAccounts();
+    applyTheme();
+
+    document.addEventListener("click", (event) => {
+      const accentButton = event.target.closest("[data-accent]");
+      if (accentButton) {
+        state.accent = accentButton.dataset.accent;
+        applyTheme();
+        return;
+      }
+
+      const modeButton = event.target.closest("[data-mode]");
+      if (modeButton) {
+        state.themeMode = modeButton.dataset.mode;
+        applyTheme();
+        return;
+      }
+
+      const bgButton = event.target.closest("[data-bgstyle]");
+      if (bgButton) {
+        state.bg = bgButton.dataset.bgstyle;
+        applyTheme();
+        return;
+      }
+
+      const accountButton = event.target.closest("[data-account]");
+      if (accountButton) {
+        state.account = accountButton.dataset.account;
+        renderAccounts();
+        $("#master-password").focus();
+        return;
+      }
+
+      const openAccountButton = event.target.closest("[data-open-account]");
+      if (openAccountButton) {
+        openAccountSheet(openAccountButton.dataset.openAccount);
+        return;
+      }
+
+      if (event.target.closest("#import-button") || event.target.closest("[data-import-file]")) {
+        $("#import-input").click();
+        return;
+      }
+
+      if (event.target.closest("#new-entry-button")) {
+        openEntryEditor("new");
+        return;
+      }
+
+      if (event.target.closest("[data-close-entry]")) {
+        closeEntryEditor();
+        return;
+      }
+
+      if (event.target.closest("[data-close-import]")) {
+        closeImportSheet();
+        return;
+      }
+
+      if (event.target.closest("[data-close-account]")) {
+        closeAccountSheet();
+        return;
+      }
+
+      if (event.target.closest("[data-open-password]")) {
+        openPasswordSheet();
+        return;
+      }
+
+      if (event.target.closest("[data-close-password]")) {
+        closePasswordSheet();
+        return;
+      }
+
+      const openSettingsButton = event.target.closest("[data-open-settings]");
+      if (openSettingsButton) {
+        openSettings(openSettingsButton.dataset.section);
+        return;
+      }
+
+      const closeSettingsButton = event.target.closest("[data-close-settings]");
+      if (closeSettingsButton) {
+        closeSettings();
+        return;
+      }
+
+      const toastButton = event.target.closest("[data-toast]");
+      if (toastButton) {
+        toast(toastButton.dataset.toast);
+        return;
+      }
+
+      const previewButton = event.target.closest("[data-preview]");
+      if (previewButton) {
+        setScreen(previewButton.dataset.preview);
+        return;
+      }
+
+      const actionButton = event.target.closest("[data-action]");
+      if (actionButton) {
+        event.stopPropagation();
+        handleAction(
+          actionButton.dataset.action,
+          actionButton.dataset.entryId,
+          actionButton.dataset.domain,
+        );
+        return;
+      }
+
+      const entryRow = event.target.closest("[data-entry-id]");
+      if (entryRow && !event.target.closest("[data-action]")) {
+        selectEntry(entryRow.dataset.entryId);
+      }
+    });
+
+    // Account cards and entry rows are keyboard-accessible buttons
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        if (confirmBackdrop.classList.contains("open")) closeConfirm();
+        else if (entrySheet.classList.contains("open")) closeEntryEditor();
+        else if (importSheet.classList.contains("open")) closeImportSheet();
+        else if (accountSheet.classList.contains("open")) closeAccountSheet();
+        else if (passwordSheet.classList.contains("open")) closePasswordSheet();
+        else if (settingsSheet.classList.contains("open")) closeSettings();
+        else if (!tweaksPanel.hidden) tweaksPanel.hidden = true;
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        if (!vaultScreen.hidden) {
+          event.preventDefault();
+          $("#search").focus();
+        }
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "l") {
+        if (!vaultScreen.hidden) {
+          event.preventDefault();
+          $("#lock-button").click();
+        }
+      }
+      if (
+        event.key === "Enter" &&
+        event.target.matches("[data-entry-id]") &&
+        !event.target.closest("[data-action]")
+      ) {
+        selectEntry(event.target.dataset.entryId);
+      }
+    });
+
+    $("#login-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      setScreen("vault");
+    });
+
+    $("#hello-unlock").addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      const original = button.innerHTML;
+      button.innerHTML = '<svg class="icon icon-sm"><use href="#i-fingerprint"/></svg>正在验证 Windows Hello...';
+      button.disabled = true;
+      setTimeout(() => {
+        button.innerHTML = original;
+        button.disabled = false;
+        setScreen("vault");
+      }, 700);
+    });
+
+    $("#login-reveal").addEventListener("click", () => {
+      const input = $("#master-password");
+      input.type = input.type === "password" ? "text" : "password";
+    });
+
+    $("#lock-button").addEventListener("click", () => {
+      closeEntryEditor();
+      closeImportSheet();
+      closeAccountSheet();
+      closePasswordSheet();
+      closeSettings();
+      closeConfirm();
+      setScreen("login");
+      $("#master-password").value = "";
+      setTimeout(() => $("#master-password").focus(), 80);
+    });
+
+    $("#search").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      renderGroups();
+      $("#view-meta").textContent = state.query ? `搜索 · ${state.query}` : "本地 · 刚刚同步";
+    });
+
+    settingsBackdrop.addEventListener("click", closeSettings);
+
+    $("#entry-form").addEventListener("submit", saveEntry);
+    $("#entry-reveal").addEventListener("click", () => {
+      const input = $("#entry-password");
+      input.type = input.type === "password" ? "text" : "password";
+      $("#entry-reveal").innerHTML = `<svg class="icon icon-sm"><use href="#${input.type === "password" ? "i-eye" : "i-eye-off"}"/></svg>`;
+    });
+    $("#entry-copy").addEventListener("click", () => {
+      const value = $("#entry-password").value;
+      if (value) copyText(value);
+    });
+    $("#generate-password").addEventListener("click", () => {
+      $("#entry-password").value = generatePassword();
+      $("#entry-password").type = "text";
+      toast("已生成 20 位强密码");
+    });
+    $("#entry-delete").addEventListener("click", () => {
+      if (state.editor?.id) requestDeleteEntry(state.editor.id);
+    });
+    entryBackdrop.addEventListener("click", closeEntryEditor);
+
+    $("#import-input").addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const preview = parseBrowserCsv(await file.text());
+        openImportSheet(preview);
+      } catch (error) {
+        toast(error.message || "无法读取 CSV 文件");
+      }
+      event.target.value = "";
+    });
+    $("#import-confirm").addEventListener("click", confirmImport);
+    importBackdrop.addEventListener("click", closeImportSheet);
+
+    $("#account-form").addEventListener("submit", submitAccountForm);
+    accountBackdrop.addEventListener("click", closeAccountSheet);
+
+    $("#recovery-saved").addEventListener("change", (event) => {
+      $("#recovery-continue").disabled = !event.target.checked;
+    });
+    $("#copy-recovery-key").addEventListener("click", () => {
+      copyText($("#recovery-key-value").textContent);
+    });
+    $("#recovery-continue").addEventListener("click", () => {
+      closeSheet(recoverySheet, recoveryBackdrop);
+      state.recoveryAccountId = null;
+      setScreen("vault");
+      toast("恢复密钥已保存");
+    });
+    recoveryBackdrop.addEventListener("click", () => {
+      toast("请先保存恢复密钥，再进入密码库");
+    });
+
+    $("#password-form").addEventListener("submit", submitPasswordChange);
+    passwordBackdrop.addEventListener("click", closePasswordSheet);
+
+    $("#confirm-cancel").addEventListener("click", closeConfirm);
+    $("#confirm-ok").addEventListener("click", () => {
+      const action = pendingConfirm;
+      closeConfirm();
+      if (action) action();
+    });
+    confirmBackdrop.addEventListener("click", (event) => {
+      if (event.target === confirmBackdrop) closeConfirm();
+    });
+
+    $("#change-avatar").addEventListener("click", () => {
+      if (state.screen !== "vault") {
+        toast("解锁后可以更换头像");
+        return;
+      }
+      $("#avatar-input").click();
+    });
+    $("#avatar-input").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        activeAccount().avatarUrl = reader.result;
+        renderAccounts();
+        toast("头像已更新");
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    });
+    $("#remove-avatar").addEventListener("click", () => {
+      if (state.screen !== "vault") return;
+      activeAccount().avatarUrl = null;
+      renderAccounts();
+      toast("头像已移除");
+    });
+
+    $("#wipe-data").addEventListener("click", () => {
+      askConfirm(
+        "清除本机全部数据",
+        "这会删除所有本地账户和加密密码库。设计原型不会实际删除数据。",
+        "永久删除",
+        () => {
+          toast("设计原型不会删除真实数据");
+          closeSettings();
+          setScreen("login");
+        },
+      );
+    });
+
+    $("#tweaks-toggle").addEventListener("click", () => {
+      tweaksPanel.hidden = !tweaksPanel.hidden;
+    });
+    $("#tweaks-close").addEventListener("click", () => {
+      tweaksPanel.hidden = true;
+    });
+
+    const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+    systemTheme.addEventListener?.("change", () => {
+      if (state.themeMode === "system") applyTheme();
+    });
+
+    // Hash routes make each state easy to screenshot and review.
+    const hash = location.hash.replace("#", "");
+    if (hash === "vault" || hash === "settings") {
+      setScreen("vault");
+      if (hash === "settings") openSettings();
+    } else if (hash === "tweaks") {
+      tweaksPanel.hidden = false;
+    }
+
+    setTimeout(() => $("#master-password").focus(), 250);
+  </script>
+</body>
+</html>

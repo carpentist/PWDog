@@ -1,0 +1,28 @@
+.gradle/
+build/
+**/build/
+.idea/
+.vscode/
+.claude/
+*.iml
+local.properties
+.kotlin/
+.tools/
+out/
+*.log
+
+# Local vault data used while developing
+.devdata/
+.docdata/
+.devimports/
+.shots/
+.msi-build/
+.msi-inspect/
+.msitest/
+.icon-build/
+.capture.ps1
+
+# Release artifacts are built, not committed
+dist/
+*.msi
+PWDog-Extension-*.zip

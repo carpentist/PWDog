@@ -1,0 +1,48 @@
+name: Feature request
+description: Suggest an improvement for PWDog
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        PWDog is intentionally local-first. Please explain how a proposal fits that constraint.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Usability
+        - Security
+        - Browser extension
+        - Import / interoperability
+        - Appearance
+        - Packaging / updates
+        - Android
+        - Other
+    validations:
+      required: true

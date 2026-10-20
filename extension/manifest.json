@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "PWDog Autofill",
+  "version": "0.1.0",
+  "description": "Fill credentials from the local PWDog desktop app.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*"
+  ],
+  "action": {
+    "default_title": "PWDog 自动填充",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}

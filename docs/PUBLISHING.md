@@ -1,0 +1,72 @@
+# Publishing checklist
+
+## Repository metadata
+
+Suggested description:
+
+```text
+Local-first Windows password manager built with Kotlin and Compose. AES-256-GCM, Argon2id, SQLCipher, browser autofill.
+```
+
+Suggested topics:
+
+```text
+password-manager windows kotlin compose-desktop local-first sqlcipher argon2id browser-extension
+```
+
+Social preview image: [`docs/images/social-preview.png`](images/social-preview.png). Upload it under **Settings → General → Social preview**.
+
+Enable **Settings → Code security → Private vulnerability reporting** so [SECURITY.md](../SECURITY.md) works as written.
+
+## Version bump
+
+A release needs all of these updated together:
+
+1. `desktopApp/build.gradle.kts` → `packageVersion`
+2. `desktopApp/build.gradle.kts` → the `--app-version` argument in `packageMsiWithCleanup`
+3. `CHANGELOG.md`
+4. `docs/RELEASE_NOTES_v<version>.md`
+5. `README.md` download filename and screenshots if the UI changed
+
+The Release workflow fails if the tag version and `packageVersion` do not match.
+
+## Build locally
+
+```powershell
+.\gradlew.bat :shared:jvmTest :desktopApp:test
+.\gradlew.bat :desktopApp:packageMsiWithCleanup
+```
+
+Output: `desktopApp\build\compose\binaries\main\msi\PWDog-<version>.msi`
+
+## Release assets
+
+- `PWDog-<version>.msi`
+- `PWDog-Extension-<version>.zip` (contents of `extension/`)
+- `SHA256SUMS.txt`
+
+The Release workflow builds these on `windows-latest` and uploads them with `gh release upload --clobber`.
+
+## Tag and publish
+
+```powershell
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.0.md` and attaches the assets.
+
+## Before announcing
+
+- Verify the MSI installs per-user without administrator rights.
+- Verify upgrade from the previous version preserves `%LOCALAPPDATA%\PWDogData`.
+- Verify a true uninstall removes `%LOCALAPPDATA%\PWDogData` for the current Windows user.
+- Check that the browser extension still pairs and fills.
+- Confirm `SHA256SUMS.txt` matches the uploaded files.
+- Confirm no real vault data, tokens, or personal screenshots were committed.
+
+## Not yet automated
+
+- Code signing
+- Auto-update
+- Chrome Web Store / Edge Add-ons publishing

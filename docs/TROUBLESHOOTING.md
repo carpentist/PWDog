@@ -2,7 +2,7 @@
 
 ## 卸载时报 Error 1926，提示 `E:\Config.Msi\*.rbf` 权限不足
 
-这是 **Windows Installer 的回滚文件权限问题**，不是 PWDog 的密码库文件损坏。
+这是 **Windows Installer 的回滚文件权限问题**，不是 PWDog 的密码库文件损坏。**0.2.2 起 MSI 已改为按所有用户安装并提权；如果仍然出现，优先使用便携版 ZIP。**
 
 典型日志：
 
@@ -33,7 +33,10 @@ Verify that you have sufficient privileges to modify the security permissions fo
    ```
 
 3. **安装到默认的系统盘路径**
-   PWDog 0.2.1 默认按当前用户安装到 `%LOCALAPPDATA%\PWDog`（通常在 C:）。避开权限异常的 `E:\` 根目录可以减少这类 Windows Installer 问题。
+   PWDog 0.2.2 的 MSI 支持选择任意盘符；如果 E: 盘的 `Config.Msi` 权限仍然异常，安装到 C: 的默认路径可以绕开该目录。
+
+4. **使用便携版 ZIP**
+   解压到 `E:\PWDog` 后直接运行 `PWDog.exe`，完全不经过 Windows Installer 和 `E:\Config.Msi`。便携版卸载只需退出程序并删除程序文件夹；需要清除全部数据时再删除 `%LOCALAPPDATA%\PWDogData`。
 
 如果卸载已经完成（应用和“应用和功能”条目都不见了），这个错误通常只是回滚文件操作失败。先备份数据目录，再安装新版本即可。
 

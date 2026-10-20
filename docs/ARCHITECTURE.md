@@ -91,7 +91,8 @@ sequenceDiagram
 
 `desktopApp/build.gradle.kts` 中的 `packageMsiWithCleanup` 使用自定义 WiX 模板重新生成 MSI：
 
-- 按用户安装，默认 `%LOCALAPPDATA%\PWDog`；
+- 0.2.2 起按所有用户安装（提权），默认 `C:\Program Files\PWDog`，可选择 E: 等其他盘符；
+- 同时发布便携版 ZIP，解压到任意目录运行，不经过 Windows Installer；
 - 卸载时通过 `util:RemoveFolderEx` 删除当前 Windows 用户的 `%LOCALAPPDATA%\PWDogData`；
 - 同时移除开机自启注册表值；
 - `UPGRADINGPRODUCTCODE` 条件确保升级期间不会删除数据；

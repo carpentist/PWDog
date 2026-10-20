@@ -48,15 +48,35 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 ## 下载与安装
 
-从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 下载最新的 `PWDog-0.2.1.msi`。
+从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 选择：
+
+- `PWDog-0.2.2.msi` — 标准安装包，按所有用户安装，需要管理员权限，可选择任意盘符。
+- `PWDog-0.2.2-portable.zip` — 便携版，解压后运行，不需要安装。
+
+### 标准安装（MSI）
 
 - 要求：Windows 10 / 11 x64。
-- 按当前 Windows 用户安装，默认路径 `%LOCALAPPDATA%\PWDog`，不需要管理员权限。
+- 默认安装到 `C:\Program Files\PWDog`；安装向导支持选择其他盘符，例如 `E:\PWDog`。
+- 安装和卸载都需要管理员权限。账户数据仍按 Windows 用户隔离，保存在 `%LOCALAPPDATA%\PWDogData`。
 - 当前构建未做代码签名，Windows SmartScreen 可能提示“未知发布者”；请确认文件来自本仓库的 Release，并核对 `SHA256SUMS.txt`。
-- **卸载入口**：Windows 设置 → 应用 → 已安装的应用 → 搜索 PWDog → 卸载。0.2.1 起开始菜单也会创建“卸载 PWDog”快捷方式。安装目录中没有 `uninstall.exe`，这是 MSI 的正常行为。
+- **卸载入口**：Windows 设置 → 应用 → 已安装的应用 → 搜索 PWDog → 卸载。安装目录中没有 `uninstall.exe`，这是 MSI 的正常行为。
 - **卸载会删除当前 Windows 用户下的全部 PWDog 数据**，包括所有本地账户和密码库。卸载前请先备份。
 - 升级安装不会删除数据；只有明确卸载时才会清理。
-- 如果旧版是用管理员权限安装的（注册在“所有用户”下），0.2.1 默认仍按当前用户安装。请先备份 `%LOCALAPPDATA%\PWDogData`，卸载旧版后再安装 0.2.1，避免两个版本并存。
+- 如果旧版是按当前用户安装的 0.2.1，请先备份数据并卸载旧版，再安装按所有用户安装的 0.2.2，避免两种安装范围并存。
+
+### 安装到其他盘
+
+- **MSI**：以管理员权限运行安装包，在目录选择页填写 `E:\PWDog`。0.2.2 起安装包为“所有用户”安装，安装和卸载都会提权，避免 0.2.0/0.2.1 用户级与机器级混杂导致的 `E:\Config.Msi` 权限错误。
+- **便携版**：把 ZIP 解压到 `E:\PWDog`，直接运行 `PWDog.exe`。完全不经过 Windows Installer，也不会使用 `E:\Config.Msi`。
+- 两种方式的数据都在 `%LOCALAPPDATA%\PWDogData`。便携版卸载：退出 PWDog，删除 `E:\PWDog` 文件夹；如需清除所有数据，再删除 `%LOCALAPPDATA%\PWDogData`。
+- 如果 MSI 卸载仍出现 **Error 1926 / `E:\Config.Msi` 权限不足**，优先使用便携版，或参考 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) 修复该目录权限。
+
+### 便携版（ZIP）
+
+- 解压到任意目录（例如 `E:\PWDog`），双击 `PWDog.exe` 运行。
+- 不需要安装、不需要管理员权限，也不会创建卸载项。
+- 数据仍在 `%LOCALAPPDATA%\PWDogData`，按 Windows 用户隔离。
+- 卸载：先退出 PWDog，再删除程序文件夹；需要彻底清除时删除数据目录。
 
 ## 使用
 
@@ -77,7 +97,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 桌面端锁定时不会返回密码，扩展也不会自动提交表单。
 
-从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.2.1.zip`。
+从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.2.2.zip`。
 
 ## 安全模型
 
@@ -141,11 +161,13 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 # 直接运行桌面端
 .\gradlew.bat :desktopApp:run
 
-# 构建带卸载清理的 MSI
-.\gradlew.bat :desktopApp:packageMsiWithCleanup
+# 构建 MSI 与便携版
+.\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip
 ```
 
-MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.2.1.msi`
+MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.2.2.msi`
+
+便携版输出：`desktopApp\build\compose\binaries\main\portable\PWDog-0.2.2-portable.zip`
 
 也可以直接用 IntelliJ IDEA 打开项目并运行 `com.pwdog.desktop.MainKt`。
 

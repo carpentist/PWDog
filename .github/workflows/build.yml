@@ -31,13 +31,15 @@ jobs:
         shell: pwsh
         run: .\gradlew.bat :shared:jvmTest :desktopApp:test --no-daemon
 
-      - name: Build MSI
+      - name: Build installers
         shell: pwsh
-        run: .\gradlew.bat :desktopApp:packageMsiWithCleanup --no-daemon
+        run: .\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip --no-daemon
 
-      - name: Upload MSI
+      - name: Upload Windows packages
         uses: actions/upload-artifact@v4
         with:
-          name: PWDog-msi
-          path: desktopApp/build/compose/binaries/main/msi/*.msi
+          name: PWDog-windows
+          path: |
+            desktopApp/build/compose/binaries/main/msi/*.msi
+            desktopApp/build/compose/binaries/main/portable/*.zip
           if-no-files-found: error

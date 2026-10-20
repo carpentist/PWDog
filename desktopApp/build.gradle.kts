@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.io.File
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
@@ -37,7 +38,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             modules("java.sql", "jdk.httpserver")
             packageName = "PWDog"
-            packageVersion = "0.2.1"
+            packageVersion = "0.2.2"
             description = "本地加密密码管理器"
             vendor = "PWDog"
             copyright = "Copyright 2026 PWDog"
@@ -46,7 +47,6 @@ compose.desktop {
                 iconFile.set(project.file("packaging/windows/PWDog.ico"))
                 menuGroup = "PWDog"
                 shortcut = true
-                perUserInstall = true
                 upgradeUuid = "31438ada-4e78-47b6-813f-48bec77822c7"
             }
         }
@@ -78,14 +78,13 @@ val packageMsiWithCleanup = tasks.register<Exec>("packageMsiWithCleanup") {
         "--type", "msi",
         "--app-image", appImage.absolutePath,
         "--name", "PWDog",
-        "--app-version", "0.2.1",
+        "--app-version", "0.2.2",
         "--vendor", "PWDog",
         "--description", "本地加密密码管理器",
         "--copyright", "Copyright 2026 PWDog",
         "--win-menu",
         "--win-menu-group", "PWDog",
         "--win-shortcut",
-        "--win-per-user-install",
         "--win-dir-chooser",
         "--win-upgrade-uuid", "31438ada-4e78-47b6-813f-48bec77822c7",
         "--install-dir", "PWDog",
@@ -108,6 +107,20 @@ val packageMsiWithCleanup = tasks.register<Exec>("packageMsiWithCleanup") {
 
 tasks.matching { it.name == "packageMsi" }.configureEach {
     finalizedBy(packageMsiWithCleanup)
+}
+
+val packagePortableZip = tasks.register<Zip>("packagePortableZip") {
+    group = "compose desktop"
+    description = "Build a portable ZIP that can be extracted to any drive"
+    dependsOn("createDistributable")
+    from(layout.buildDirectory.dir("compose/binaries/main/app/PWDog")) {
+        into("PWDog")
+    }
+    from(layout.projectDirectory.file("packaging/portable/README.txt")) {
+        into("PWDog")
+    }
+    archiveFileName.set("PWDog-0.2.2-portable.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("compose/binaries/main/portable"))
 }
 
 tasks.register<JavaExec>("benchmark") {

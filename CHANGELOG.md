@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.2 — 2026-10-20
+
+### Changed
+
+- MSI 改为按所有用户安装并提权，支持安装到 E: 等非系统盘；安装与卸载需要管理员权限。
+- 新增便携版 ZIP：解压到任意盘运行，不经过 Windows Installer，也不使用 `Config.Msi`。
+- 数据目录仍按 Windows 用户隔离在 `%LOCALAPPDATA%\PWDogData`。
+
+### Fixed
+
+- 改善 MSI 在非系统盘安装/卸载时的 Windows Installer Error 1926（`Config.Msi` 回滚文件权限）问题。
+- 文档补充非系统盘安装、便携版卸载与数据清理说明。
+
 ## 0.2.1 — 2026-10-20
 
 ### Fixed

@@ -34,14 +34,18 @@ The Release workflow fails if the tag version and `packageVersion` do not match.
 
 ```powershell
 .\gradlew.bat :shared:jvmTest :desktopApp:test
-.\gradlew.bat :desktopApp:packageMsiWithCleanup
+.\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip
 ```
 
-Output: `desktopApp\build\compose\binaries\main\msi\PWDog-<version>.msi`
+Outputs:
+
+- `desktopApp\build\compose\binaries\main\msi\PWDog-<version>.msi`
+- `desktopApp\build\compose\binaries\main\portable\PWDog-<version>-portable.zip`
 
 ## Release assets
 
 - `PWDog-<version>.msi`
+- `PWDog-<version>-portable.zip`
 - `PWDog-Extension-<version>.zip` (contents of `extension/`)
 - `SHA256SUMS.txt`
 
@@ -50,11 +54,11 @@ The Release workflow builds these on `windows-latest` and uploads them with `gh 
 ## Tag and publish
 
 ```powershell
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ```
 
-The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.1.md` and attaches the assets.
+The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.2.2.md` and attaches the assets.
 
 ## Before announcing
 

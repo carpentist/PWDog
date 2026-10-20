@@ -48,9 +48,9 @@ jobs:
         shell: pwsh
         run: .\gradlew.bat :shared:jvmTest :desktopApp:test --no-daemon
 
-      - name: Build MSI
+      - name: Build installers
         shell: pwsh
-        run: .\gradlew.bat :desktopApp:packageMsiWithCleanup --no-daemon
+        run: .\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip --no-daemon
 
       - name: Package release assets
         shell: pwsh
@@ -69,6 +69,11 @@ jobs:
           $msi = Get-ChildItem "desktopApp/build/compose/binaries/main/msi/*.msi" | Select-Object -First 1
           if ($null -eq $msi) { throw "MSI was not produced" }
           Copy-Item $msi.FullName "dist/PWDog-$version.msi"
+
+          $portable = Get-ChildItem "desktopApp/build/compose/binaries/main/portable/*.zip" | Select-Object -First 1
+          if ($null -eq $portable) { throw "Portable ZIP was not produced" }
+          Copy-Item $portable.FullName "dist/PWDog-$version-portable.zip"
+
           Compress-Archive -Path "extension\*" -DestinationPath "dist/PWDog-Extension-$version.zip" -Force
 
           Get-ChildItem dist -File | Where-Object { $_.Name -ne "SHA256SUMS.txt" } | ForEach-Object {
@@ -97,6 +102,7 @@ jobs:
 
           gh release upload $tag `
             "dist/PWDog-$version.msi" `
+            "dist/PWDog-$version-portable.zip" `
             "dist/PWDog-Extension-$version.zip" `
             "dist/SHA256SUMS.txt" `
             --repo $env:GITHUB_REPOSITORY --clobber

@@ -88,20 +88,31 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 ### 浏览器扩展
 
-安装版会同时解压 Chromium 和 Firefox 两套扩展：
+#### Chrome / Edge
 
 1. 打开 PWDog 设置 → 浏览器自动填充。
-2. **Chrome / Edge**：点击“打开 Chrome / Edge 扩展文件夹”，在扩展管理页启用开发者模式，选择“加载已解压的扩展程序”，选中 `chromium` 文件夹。
-3. **Firefox 109+**：点击“打开 Firefox 扩展文件夹”，打开 `about:debugging#/runtime/this-firefox`，选择“临时载入附加组件”，选中 `firefox` 文件夹中的 `manifest.json`。
+2. 点击“打开 Chrome / Edge 扩展文件夹”。
+3. 在扩展管理页启用开发者模式，选择“加载已解压的扩展程序”，选中 `chromium` 文件夹。
 4. 复制页面上的接口地址与配对令牌，填入扩展设置。
+
+Chrome / Edge 的已解压扩展会跨浏览器重启保留。
+
+#### Firefox 140+
+
+Firefox 正式版要求扩展由 Mozilla 签名。Release 已提供签名 XPI：
+
+1. 下载 `PWDog-Firefox-Extension-0.3.0.xpi`。
+2. Firefox 打开 `about:addons`。
+3. 右上角齿轮 → **从文件安装附加组件**，选择下载的 XPI。
+4. 打开扩展设置，填写 PWDog 配对页显示的接口地址与令牌。
+
+安装后跨重启保留，不再需要 `about:debugging`。这是 unlisted 签名：可以永久安装，但不会自动更新；发布新版本时安装新的签名 XPI 即可，配对信息会保留。
+
+安装版仍会解压 `firefox` 文件夹，供开发和临时加载使用；正常使用请选择签名 XPI。
 
 桌面端锁定时不会返回密码，扩展也不会自动提交表单。
 
-Firefox 未签名扩展在浏览器重启后需要重新临时载入。
-
-**长期使用**：Firefox 正式版要求扩展由 Mozilla 签名。仓库提供 `Sign Firefox Extension` 工作流：配置 AMO API 密钥后生成签名 XPI，安装一次后即可跨重启保留。详见 [docs/FIREFOX_SIGNING.md](docs/FIREFOX_SIGNING.md)。
-
-从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 同时提供 `PWDog-Extension-0.3.0.zip`（Chromium）和 `PWDog-Firefox-Extension-0.3.0.zip`（Firefox）。
+从源码运行时也可以直接加载仓库的 [`extension/`](extension) 目录；Release 提供 `PWDog-Extension-0.3.0.zip`（Chromium）和 `PWDog-Firefox-Extension-0.3.0.xpi`（Firefox 签名包）。签名流程见 [docs/FIREFOX_SIGNING.md](docs/FIREFOX_SIGNING.md)。
 
 ## 安全模型
 

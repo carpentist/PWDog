@@ -4,15 +4,15 @@
 
 ### Added
 
-- Firefox 109+ Manifest V3 扩展支持，与 Chrome / Edge 共用同一套代码。
+- Firefox 140+ Manifest V3 扩展支持，与 Chrome / Edge 共用同一套代码。
 - 新增 `browser-api.js`，同时适配 Chrome 回调 API 与 Firefox Promise API。
 - 安装版同时解压 `chromium` 和 `firefox` 两个扩展目录，配对页分别提供打开入口。
-- Release 新增 `PWDog-Firefox-Extension-0.3.0.zip`。
+- Release 新增 `PWDog-Firefox-Extension-0.3.0.xpi`（AMO unlisted 签名）。
 - 扩展图标、`options_ui` 与统一版本号。
 
 ### Notes
 
-- Firefox 扩展目前通过 `about:debugging` 临时载入，浏览器重启后需要重新加载；AMO 上架与签名列入路线图。
+- Firefox 使用 AMO unlisted 签名 XPI，安装后持久保留；自动更新仍需 AMO 正式上架。
 - 0.2.2 的按所有用户安装、便携版和非系统盘支持继续保留。
 
 ## 0.2.2 — 2026-10-20

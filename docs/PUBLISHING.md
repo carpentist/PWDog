@@ -48,10 +48,11 @@ Outputs:
 - `PWDog-<version>.msi`
 - `PWDog-<version>-portable.zip`
 - `PWDog-Extension-<version>.zip` (Chromium)
-- `PWDog-Firefox-Extension-<version>.zip` (Firefox)
+- `PWDog-Firefox-Extension-<version>.xpi` (signed Firefox, from the Sign Firefox Extension workflow)
 - `SHA256SUMS.txt`
+- `SHA256SUMS-firefox.txt` (signed XPI)
 
-The Release workflow builds these on `windows-latest` and uploads them with `gh release upload --clobber`.
+The Release workflow builds the app packages and Chromium extension on `windows-latest`. The Firefox XPI is signed separately by `sign-firefox.yml` and attached to the release.
 
 ## Tag and publish
 

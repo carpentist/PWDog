@@ -57,11 +57,11 @@ The Release workflow builds the app packages and Chromium extension on `windows-
 ## Tag and publish
 
 ```powershell
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.3.1
+git push origin v0.3.1
 ```
 
-The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.3.0.md` and attaches the assets.
+The workflow creates the GitHub Release using `docs/RELEASE_NOTES_v0.3.1.md` and attaches the assets.
 
 ## Before announcing
 

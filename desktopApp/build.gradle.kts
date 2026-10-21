@@ -33,12 +33,22 @@ tasks.named<ProcessResources>("processResources") {
 compose.desktop {
     application {
         mainClass = "com.pwdog.desktop.MainKt"
+        jvmArgs += listOf(
+            "-Xms16m",
+            "-Xmx256m",
+            "-XX:+UseSerialGC",
+            "-XX:MaxMetaspaceSize=128m",
+            "-XX:ReservedCodeCacheSize=64m",
+            "-XX:MaxDirectMemorySize=192m",
+            "-XX:MinHeapFreeRatio=10",
+            "-XX:MaxHeapFreeRatio=25",
+        )
 
         nativeDistributions {
             targetFormats(TargetFormat.Msi)
             modules("java.sql", "jdk.httpserver")
             packageName = "PWDog"
-            packageVersion = "0.3.0"
+            packageVersion = "0.3.1"
             description = "本地加密密码管理器"
             vendor = "PWDog"
             copyright = "Copyright 2026 PWDog"
@@ -78,7 +88,7 @@ val packageMsiWithCleanup = tasks.register<Exec>("packageMsiWithCleanup") {
         "--type", "msi",
         "--app-image", appImage.absolutePath,
         "--name", "PWDog",
-        "--app-version", "0.3.0",
+        "--app-version", "0.3.1",
         "--vendor", "PWDog",
         "--description", "本地加密密码管理器",
         "--copyright", "Copyright 2026 PWDog",
@@ -119,7 +129,7 @@ val packagePortableZip = tasks.register<Zip>("packagePortableZip") {
     from(layout.projectDirectory.file("packaging/portable/README.txt")) {
         into("PWDog")
     }
-    archiveFileName.set("PWDog-0.3.0-portable.zip")
+    archiveFileName.set("PWDog-0.3.1-portable.zip")
     destinationDirectory.set(layout.buildDirectory.dir("compose/binaries/main/portable"))
 }
 

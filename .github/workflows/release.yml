@@ -64,6 +64,7 @@ jobs:
           if ($appVersion -ne $version) {
             throw "Tag version $version does not match packageVersion $appVersion"
           }
+          $extVersion = (Get-Content "extension/manifest.json" -Raw | ConvertFrom-Json).version
 
           New-Item -ItemType Directory -Force dist | Out-Null
           $msi = Get-ChildItem "desktopApp/build/compose/binaries/main/msi/*.msi" | Select-Object -First 1
@@ -78,7 +79,7 @@ jobs:
           Copy-Item "extension\*" "build/ext-chromium" -Recurse -Force -Exclude "manifest.firefox.json"
 
           # Use jar instead of Compress-Archive: ZIP entries must use '/' for browser extensions.
-          jar cfM "dist/PWDog-Extension-$version.zip" -C "build/ext-chromium" .
+          jar cfM "dist/PWDog-Extension-$extVersion.zip" -C "build/ext-chromium" .
 
           Get-ChildItem dist -File | Where-Object { $_.Name -ne "SHA256SUMS.txt" } | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
@@ -92,6 +93,7 @@ jobs:
         run: |
           $tag = "${{ steps.version.outputs.tag }}"
           $version = "${{ steps.version.outputs.version }}"
+          $extVersion = (Get-Content "extension/manifest.json" -Raw | ConvertFrom-Json).version
           $notes = "docs/RELEASE_NOTES_$tag.md"
 
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
@@ -107,7 +109,7 @@ jobs:
           gh release upload $tag `
             "dist/PWDog-$version.msi" `
             "dist/PWDog-$version-portable.zip" `
-            "dist/PWDog-Extension-$version.zip" `
+            "dist/PWDog-Extension-$extVersion.zip" `
             "dist/SHA256SUMS.txt" `
             --repo $env:GITHUB_REPOSITORY --clobber
           if ($LASTEXITCODE -ne 0) { throw "Failed to upload release assets" }

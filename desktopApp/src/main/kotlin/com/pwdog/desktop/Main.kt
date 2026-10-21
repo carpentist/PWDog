@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import com.pwdog.desktop.design.QuietButton
 import com.pwdog.desktop.design.QuietButtonStyle
 import com.pwdog.desktop.design.QuietNotice
 import com.pwdog.desktop.design.NoticeTone
+import com.pwdog.desktop.security.MemoryTrim
 import com.pwdog.desktop.security.WindowsQuickUnlock
 import com.pwdog.desktop.settings.AppSettings
 import com.pwdog.desktop.settings.AppSettingsStore
@@ -48,13 +50,29 @@ import com.pwdog.desktop.theme.LocalQuiet
 import com.pwdog.desktop.theme.PwdogTheme
 import com.pwdog.desktop.theme.QuietType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.awt.Frame
+import java.awt.event.WindowStateListener
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.system.exitProcess
 import org.jetbrains.skia.Image
 
-fun main(args: Array<String>) = application {
+fun main(args: Array<String>) {
+    val instance = SingleInstance.acquire()
+    if (instance == null) {
+        SingleInstance.requestShow()
+        exitProcess(0)
+    }
+    try {
+        runPwdog(args, instance)
+    } finally {
+        instance.close()
+    }
+}
+
+private fun runPwdog(args: Array<String>, instance: SingleInstance) = application {
     val service = remember { AccountService() }
     var session by remember { mutableStateOf<VaultSession?>(null) }
     val sessionRef = remember { AtomicReference<VaultSession?>(null) }
@@ -65,6 +83,11 @@ fun main(args: Array<String>) = application {
     var windowVisible by remember {
         mutableStateOf(!args.contains("--tray") || !traySupported)
     }
+    var focusRequest by remember { mutableStateOf(0) }
+    val showWindow: () -> Unit = {
+        windowVisible = true
+        focusRequest++
+    }
     val windowState = rememberWindowState(width = 1180.dp, height = 760.dp)
     val trayIcon = remember { loadAppIcon() }
     val trayState = rememberTrayState()
@@ -74,6 +97,25 @@ fun main(args: Array<String>) = application {
     val updateSettings: (AppSettings) -> Unit = { updated ->
         appSettings = updated
         runCatching { settingsStore.save(updated) }
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(500)
+            if (instance.consumeShowRequest()) {
+                showWindow()
+            }
+        }
+    }
+
+    LaunchedEffect(windowVisible) {
+        if (!windowVisible) {
+            delay(2_500)
+            if (!windowVisible) {
+                Runtime.getRuntime().gc()
+                MemoryTrim.trimWorkingSet()
+            }
+        }
     }
 
     fun quitApplication() {
@@ -126,6 +168,30 @@ fun main(args: Array<String>) = application {
         androidx.compose.runtime.LaunchedEffect(Unit) {
             runCatching { window.minimumSize = java.awt.Dimension(980, 700) }
         }
+        LaunchedEffect(windowVisible, focusRequest) {
+            if (windowVisible) {
+                runCatching {
+                    if (window.extendedState and Frame.ICONIFIED != 0) {
+                        window.extendedState = Frame.NORMAL
+                    }
+                    window.toFront()
+                    window.requestFocus()
+                }
+            }
+        }
+        DisposableEffect(Unit) {
+            val listener = WindowStateListener { event ->
+                if (event.newState and Frame.ICONIFIED != 0) {
+                    appScope.launch {
+                        delay(1_500)
+                        Runtime.getRuntime().gc()
+                        MemoryTrim.trimWorkingSet()
+                    }
+                }
+            }
+            window.addWindowStateListener(listener)
+            onDispose { window.removeWindowStateListener(listener) }
+        }
         PwdogTheme(appSettings) {
             PwdogApp(
                 service = service,
@@ -146,7 +212,7 @@ fun main(args: Array<String>) = application {
             icon = trayIcon,
             state = trayState,
             tooltip = "PWDog Password Manager",
-            onAction = { windowVisible = true },
+            onAction = showWindow,
         ) {
             Item(
                 if (session != null) "PWDog - Unlocked" else "PWDog - Locked",
@@ -154,7 +220,7 @@ fun main(args: Array<String>) = application {
                 onClick = {},
             )
             Separator()
-            Item("Show PWDog", onClick = { windowVisible = true })
+            Item("Show PWDog", onClick = showWindow)
             Item(
                 "Lock PWDog",
                 enabled = session != null,
@@ -163,7 +229,7 @@ fun main(args: Array<String>) = application {
                     sessionRef.set(null)
                     session?.close()
                     session = null
-                    windowVisible = true
+                    showWindow()
                 },
             )
             Separator()

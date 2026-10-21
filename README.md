@@ -50,8 +50,8 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 
 从 [Releases](https://github.com/carpentist/PWDog/releases/latest) 选择：
 
-- `PWDog-0.3.0.msi` — 标准安装包，按所有用户安装，需要管理员权限，可选择任意盘符。
-- `PWDog-0.3.0-portable.zip` — 便携版，解压后运行，不需要安装。
+- `PWDog-0.3.1.msi` — 标准安装包，按所有用户安装，需要管理员权限，可选择任意盘符。
+- `PWDog-0.3.1-portable.zip` — 便携版，解压后运行，不需要安装。
 
 ### 标准安装（MSI）
 
@@ -62,7 +62,7 @@ PWDog 是一个本地优先的 Windows 密码管理器。它把账户和密码�
 - **卸载入口**：Windows 设置 → 应用 → 已安装的应用 → 搜索 PWDog → 卸载。安装目录中没有 `uninstall.exe`，这是 MSI 的正常行为。
 - **卸载会删除当前 Windows 用户下的全部 PWDog 数据**，包括所有本地账户和密码库。卸载前请先备份。
 - 升级安装不会删除数据；只有明确卸载时才会清理。
-- 如果旧版是按当前用户安装的 0.2.1，请先备份数据并卸载旧版，再安装按所有用户安装的 0.3.0，避免两种安装范围并存。
+- 如果旧版是按当前用户安装的 0.2.1，请先备份数据并卸载旧版，再安装按所有用户安装的 0.3.1，避免两种安装范围并存。
 
 ### 安装到其他盘
 
@@ -180,9 +180,9 @@ Firefox 正式版要求扩展由 Mozilla 签名。Release 已提供签名 XPI：
 .\gradlew.bat :desktopApp:packageMsiWithCleanup :desktopApp:packagePortableZip
 ```
 
-MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.3.0.msi`
+MSI 输出：`desktopApp\build\compose\binaries\main\msi\PWDog-0.3.1.msi`
 
-便携版输出：`desktopApp\build\compose\binaries\main\portable\PWDog-0.3.0-portable.zip`
+便携版输出：`desktopApp\build\compose\binaries\main\portable\PWDog-0.3.1-portable.zip`
 
 也可以直接用 IntelliJ IDEA 打开项目并运行 `com.pwdog.desktop.MainKt`。
 
@@ -216,7 +216,7 @@ docs/         截图、架构与发布说明
 - [ ] Android 客户端（共享加密与数据模型）
 - [ ] 可选的端到端加密同步
 - [ ] 密码健康检查与重复密码提示
-- [ ] Firefox AMO 上架与签名
+- [ ] Firefox AMO 正式上架与自动更新
 - [ ] 代码签名安装包
 - [ ] 自动更新
 
